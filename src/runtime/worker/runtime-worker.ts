@@ -169,6 +169,37 @@ class WorkerRuntimeManager {
     }
   }
 
+  public async interrupt(reqId: string): Promise<void> {
+    if (!this.activeProcess) {
+      this.post({
+        requestId: reqId,
+        type: 'runtime.error',
+        error: { code: 'NO_ACTIVE_PROCESS', message: 'No active process to interrupt' },
+      });
+      return;
+    }
+
+    try {
+      if (this.activeProcess.stdin) {
+        await this.activeProcess.stdin.write('\x03');
+      } else {
+        await this.activeProcess.terminate({ gracePeriodMs: 500 });
+      }
+      this.post({
+        requestId: reqId,
+        type: 'terminal.output',
+        payload: { processId: String(this.activeProcess.id), data: '^C\r\n' },
+      });
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : String(err);
+      this.post({
+        requestId: reqId,
+        type: 'runtime.error',
+        error: { code: 'INTERRUPT_FAILED', message: errorMsg },
+      });
+    }
+  }
+
   public async executeCommand(reqId: string, req: CommandExecuteRequest): Promise<void> {
     if (!this.sandbox) {
       this.post({
@@ -335,6 +366,9 @@ if (typeof self !== 'undefined') {
         break;
       case 'terminal.resize':
         manager.resizeTerminal(data.id, data.payload);
+        break;
+      case 'terminal.interrupt':
+        await manager.interrupt(data.id);
         break;
       case 'command.execute':
         await manager.executeCommand(data.id, data.payload);
