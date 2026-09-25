@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { detectBrowserCapabilities, RuntimeCapabilityReport } from '@domain/runtime/RuntimeCapability';
+import { TerminalView, MockTerminalProcess } from '@terminal';
 import { APP_CONFIG } from './config/app-config';
 
 export const App: React.FC = () => {
   const [capabilities, setCapabilities] = useState<RuntimeCapabilityReport | null>(null);
+  const mockProcessRef = useRef<MockTerminalProcess | null>(null);
+  if (!mockProcessRef.current) {
+    mockProcessRef.current = new MockTerminalProcess();
+  }
 
   useEffect(() => {
     setCapabilities(detectBrowserCapabilities());
@@ -104,38 +109,16 @@ export const App: React.FC = () => {
           </div>
         </aside>
 
-        {/* Terminal Container */}
-        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--terminal-bg)' }}>
-          <div
-            style={{
-              flex: 1,
-              padding: '16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '14px',
-              color: 'var(--terminal-fg)',
+        {/* Terminal Presentation Container */}
+        <main style={{ flex: 1, display: 'flex', flexDirection: 'column', backgroundColor: 'var(--terminal-bg)', overflow: 'hidden' }}>
+          <TerminalView
+            processPort={mockProcessRef.current}
+            onTerminalReady={() => {
+              mockProcessRef.current?.emitWelcomeBanner();
             }}
-          >
-            <div style={{ color: 'var(--color-text-muted)', marginBottom: '8px' }}>
-              [SHELLGROUND Runtime: Initializing client-side WASIX worker...]
-            </div>
-            <div>
-              <span style={{ color: 'var(--color-success)' }}>student@shellground</span>
-              <span style={{ color: 'var(--color-text-secondary)' }}>:</span>
-              <span style={{ color: 'var(--color-accent)' }}>~</span>
-              <span style={{ color: 'var(--color-text-secondary)' }}>$ </span>
-              <span className="cursor-blink">█</span>
-            </div>
-          </div>
-
-          {/* Terminal Bottom Statusbar */}
-          <footer className="terminal-statusbar">
-            <div>
-              <span>Mode: <strong>LEARN</strong></span> | <span>CWD: <strong>/home/student</strong></span>
-            </div>
-            <div>
-              <span>Shortcuts: <strong>Ctrl+L</strong> Clear | <strong>Ctrl+C</strong> Interrupt</span>
-            </div>
-          </footer>
+            showStatusBar={true}
+            statusText="Active"
+          />
         </main>
       </div>
     </div>
