@@ -1,0 +1,72 @@
+version: 1.0.0
+commands:
+  pwd:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: wasmer/bash
+  cd:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: wasmer/bash
+  ls:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: coreutils
+  cat:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: coreutils
+  grep:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: grep
+  find:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: findutils
+  echo:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: wasmer/bash
+  wc:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: coreutils
+  mkdir:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: coreutils
+  cp:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: coreutils
+  mv:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: coreutils
+  rm:
+    priority: P0
+    fidelity: native-wasix
+    verificationState: EVIDENCED
+    packageSource: coreutils
+  systemctl:
+    priority: P2
+    fidelity: simulated
+    verificationState: CANDIDATE
+    packageSource: internal-simulated
+  ip:
+    priority: P2
+    fidelity: simulated
+    verificationState: CANDIDATE
+    packageSource: internal-simulated

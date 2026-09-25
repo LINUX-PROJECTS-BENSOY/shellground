@@ -1,0 +1,28 @@
+id: linux-foundations
+name: Linux Foundations
+version: 1.0.0
+schemaVersion: 1.0.0
+description: Foundational Linux command-line fluency covering navigation, file manipulation, text processing, pipes, redirection, and basic troubleshooting.
+author: SHELLGROUND Curriculum Team
+difficulty: beginner
+labs:
+  - 001-where-am-i
+  - 002-absolute-vs-relative
+  - 003-hidden-files
+  - 004-build-directory-tree
+  - 005-safe-copy
+  - 006-rename-and-move
+  - 007-find-the-needle
+  - 008-recursive-search
+  - 009-count-the-evidence
+  - 010-pipeline-basics
+  - 011-redirect-correctly
+  - 012-standard-error
+  - 013-sort-and-deduplicate
+  - 014-extract-the-column
+  - 015-transform-the-stream
+  - 016-permission-repair
+  - 017-environment-variable-hunt
+  - 018-checksum-verification
+  - 019-archive-recovery
+  - 020-log-investigation
