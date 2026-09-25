@@ -1,0 +1,12 @@
+schemaVersion: 1
+id: default-workspace
+version: 1
+root: /workspace
+cwd: /workspace
+directories:
+  - path: /workspace
+files:
+  - path: /workspace/welcome.txt
+    source:
+      type: inline
+      content: "Welcome to SHELLGROUND Linux Command Training.\n"

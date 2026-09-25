@@ -1,0 +1,8 @@
+id: filesystem.cwd
+name: "Current Working Directory (CWD)"
+category: filesystem
+summary: "The directory in which the active shell session or process currently operates."
+description: "In Linux, every process has a current working directory. Relative file paths resolve relative to this directory."
+relatedCommands:
+  - pwd
+  - cd
