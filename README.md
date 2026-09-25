@@ -50,6 +50,11 @@ shellground/
 │   ├── packs/        # Curriculum packs (e.g., linux-foundations)
 │   ├── registry/     # Global registries (fidelity, packs, curriculum)
 │   └── schema/       # JSON Schemas for content validation
+├── docs/             # Normalized architecture and specifications
+│   ├── architecture/ # Architecture, repo structure, schemas, UI design
+│   ├── product/      # Requirements, scope, curriculum, SRS, SDD, SPMP
+│   ├── runtime/      # Command support matrix, fidelity reports
+│   └── development/  # Implementation plan, guides, testing
 ├── public/           # Static assets, web manifest, and COOP/COEP _headers
 ├── scripts/          # Build-time and verification tools
 ├── src/              # Application source code
@@ -120,23 +125,22 @@ npm run build
 
 ## 6. Project Specifications & Documentation
 
-All architectural specifications, curriculum designs, requirements, and development roadmaps are maintained in the private documentation repository:
-👉 **[LINUX-PROJECTS-BENSOY/shellground-docs](https://github.com/LINUX-PROJECTS-BENSOY/shellground-docs)** *(Organization Private)*
+The full specifications are maintained in this repository under [`docs/`](docs/) and published in the dedicated documentation repository:
+👉 **[LINUX-PROJECTS-BENSOY/shellground-docs](https://github.com/LINUX-PROJECTS-BENSOY/shellground-docs)**
 
-Authoritative specifications include:
-- Requirements Specification (`REQUIREMENTS.md`)
-- Feature Scope Specification (`FEATURE_SCOPE.md`)
-- Full Architecture Specification (`FULL_ARCHITECTURE.md`)
-- Command Support Matrix (`COMMAND_SUPPORT_MATRIX.md`)
-- Curriculum Specification (`CURRICULUM.md`)
-- Repository Structure Specification (`REPOSITORY_STRUCTURE.md`)
-- Database & Content Schema Specification (`DATABASE_CONTENT_SCHEMA.md`)
-- UI Design Specification (`UI_DESIGN.md`)
-- MVP Delivery Phases (`MVP_PHASES.md`)
-- Software Requirements Specification (`SRS.md`)
-- Software Design Description (`SDD.md`)
-- Implementation Plan (`IMPLEMENTATION_PLAN.md`)
-- Single Coding-Agent Execution Prompt (`SINGLE_CODING_AGENT_PROMPT.md`)
+- [Requirements Specification](docs/product/REQUIREMENTS.md)
+- [Feature Scope Specification](docs/product/FEATURE_SCOPE.md)
+- [Full Architecture Specification](docs/architecture/FULL_ARCHITECTURE.md)
+- [Command Support Matrix](docs/runtime/COMMAND_SUPPORT_MATRIX.md)
+- [Curriculum Specification](docs/product/CURRICULUM.md)
+- [Repository Structure Specification](docs/architecture/REPOSITORY_STRUCTURE.md)
+- [Database & Content Schema Specification](docs/architecture/DATABASE_CONTENT_SCHEMA.md)
+- [UI Design Specification](docs/architecture/UI_DESIGN.md)
+- [MVP Delivery Phases](docs/product/MVP_PHASES.md)
+- [Software Requirements Specification (SRS)](docs/product/SRS.md)
+- [Software Design Description (SDD)](docs/product/SDD.md)
+- [Implementation Plan](docs/development/IMPLEMENTATION_PLAN.md)
+- [Single Coding-Agent Execution Prompt](docs/agent/SINGLE_CODING_AGENT_PROMPT.md)
 
 ---
 
@@ -152,3 +156,4 @@ Authoritative specifications include:
 ## 8. License
 
 This project is licensed under the [MIT License](LICENSE).
+
