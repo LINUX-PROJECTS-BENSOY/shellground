@@ -24,8 +24,17 @@ class WorkerRuntimeManager {
   private activeProcess: Process | null = null;
   private currentInit: RuntimeInitialization | null = null;
   private isDisposed = false;
+  private eventCallback: ((msg: RuntimeWorkerEvent) => void) | null = null;
+
+  public setEventCallback(cb: (msg: RuntimeWorkerEvent) => void): void {
+    this.eventCallback = cb;
+  }
 
   private post(msg: RuntimeWorkerEvent): void {
+    if (this.eventCallback) {
+      this.eventCallback(msg);
+      return;
+    }
     if (typeof self !== 'undefined' && typeof self.postMessage === 'function') {
       self.postMessage(msg);
     }

@@ -94,10 +94,21 @@ export class WasmerShellRuntime implements ShellRuntime {
     try {
       const { WorkerRuntimeManager } = await import('@runtime/worker/runtime-worker');
       const manager = new WorkerRuntimeManager();
+      manager.setEventCallback((msg: RuntimeWorkerEvent) => {
+        this.handleWorkerMessage({ data: msg } as MessageEvent<RuntimeWorkerEvent>);
+      });
       this.inProcessManager = manager;
 
       const reqId = this.nextId();
+      const initPromise = new Promise<void>((resolve, reject) => {
+        this.pendingRequests.set(reqId, {
+          resolve: () => resolve(),
+          reject,
+        });
+      });
+
       await manager.initialize(reqId, initPayload);
+      await initPromise;
       this._status = 'ready';
     } catch (err) {
       this._status = 'error';
@@ -140,25 +151,13 @@ export class WasmerShellRuntime implements ShellRuntime {
           });
         });
 
-        // Intercept worker output in in-thread mode
-        const originalPost = (globalThis as unknown as { postMessage?: (msg: unknown) => void }).postMessage;
-        (globalThis as unknown as { postMessage: (msg: unknown) => void }).postMessage = (msg: unknown) => {
-          this.handleWorkerMessage({ data: msg } as MessageEvent<RuntimeWorkerEvent>);
-        };
-
-        try {
-          await manager.executeCommand(reqId, {
-            commandLine,
-            cwd: options?.cwd,
-            env: options?.env,
-            timeoutMs: options?.timeoutMs,
-          });
-          result = await execPromise;
-        } finally {
-          if (originalPost) {
-            (globalThis as unknown as { postMessage: (msg: unknown) => void }).postMessage = originalPost;
-          }
-        }
+        await manager.executeCommand(reqId, {
+          commandLine,
+          cwd: options?.cwd,
+          env: options?.env,
+          timeoutMs: options?.timeoutMs,
+        });
+        result = await execPromise;
       } else {
         throw new Error('Runtime manager not initialized');
       }
@@ -230,7 +229,14 @@ export class WasmerShellRuntime implements ShellRuntime {
       type ManagerWithReset = {
         reset(id: string, payload?: unknown): Promise<void>;
       };
+      const resetPromise = new Promise<void>((resolve, reject) => {
+        this.pendingRequests.set(reqId, {
+          resolve: () => resolve(),
+          reject,
+        });
+      });
       await (this.inProcessManager as ManagerWithReset).reset(reqId, {});
+      await resetPromise;
     }
     this._status = 'ready';
   }
@@ -248,7 +254,14 @@ export class WasmerShellRuntime implements ShellRuntime {
         type ManagerWithDispose = {
           dispose(id: string): Promise<void>;
         };
+        const disposePromise = new Promise<void>((resolve, reject) => {
+          this.pendingRequests.set(reqId, {
+            resolve: () => resolve(),
+            reject,
+          });
+        });
         await (this.inProcessManager as ManagerWithDispose).dispose(reqId);
+        await disposePromise;
         this.inProcessManager = null;
       }
     } finally {

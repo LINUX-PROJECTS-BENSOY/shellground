@@ -125,13 +125,13 @@ describe('Phase 0: Runtime Feasibility Spike Conformance', () => {
     it('verifies sort fidelity status (classified for simulation)', async () => {
       // As proven in the spike, uutils coreutils multicall binary in wasmer/bash 1.0.25
       // omits `sort` from its function dispatch table. We verify detection and classification.
-      const res = await runtime.execute('cat /workspace/test_dir/alpha.txt | sort').catch((e) => e);
+      const res = await runtime.execute('cat /workspace/test_dir/alpha.txt | sort');
       // Either fails with usage or is intercepted
       expect(res).toBeDefined();
     });
 
     it('verifies find search execution (find)', async () => {
-      const res = await runtime.execute('find /workspace/test_dir -name "alpha.txt"').catch((e) => e.output ?? e);
+      const res = await runtime.execute('find /workspace/test_dir -name "alpha.txt"');
       expect(res.stdout).toContain('alpha.txt');
     });
   });
