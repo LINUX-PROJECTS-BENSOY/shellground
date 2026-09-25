@@ -1,0 +1,30 @@
+schemaVersion: 1
+id: 001-where-am-i
+version: 1
+packId: linux-foundations
+title: "Where Am I? (pwd & Working Directory)"
+difficulty: beginner
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Determine your current working directory and verify it is /workspace."
+  context: "You have logged into a new Linux terminal. Before executing any file operations, confirm your current location in the filesystem."
+  instructions:
+    - "Run the pwd command to print your working directory."
+  successDescription: "The working directory /workspace is confirmed."
+concepts:
+  - filesystem.cwd
+fixture:
+  id: default-workspace
+  version: 1
+validators:
+  - id: check-cwd
+    type: cwdEquals
+    path: /workspace
+referenceSolution:
+  - pwd
+hints:
+  - id: pwd-command
+    order: 1
+    category: conceptual
+    text: "Use the pwd command (Print Working Directory) to see your current directory path."
