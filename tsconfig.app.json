@@ -33,6 +33,7 @@
       "@runtime/*": ["src/runtime/*"],
       "@terminal/*": ["src/terminal/*"],
       "@shared/*": ["src/shared/*"],
+      "@styles/*": ["src/styles/*"],
       "@content/*": ["content/*"]
     }
   },

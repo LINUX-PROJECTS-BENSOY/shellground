@@ -15,6 +15,7 @@ export default defineConfig({
       '@runtime': path.resolve(__dirname, './src/runtime'),
       '@terminal': path.resolve(__dirname, './src/terminal'),
       '@shared': path.resolve(__dirname, './src/shared'),
+      '@styles': path.resolve(__dirname, './src/styles'),
       '@content': path.resolve(__dirname, './content'),
     },
   },
