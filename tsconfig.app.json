@@ -25,13 +25,21 @@
     /* Path Aliases */
     "baseUrl": ".",
     "paths": {
+      "@app": ["src/app/index.ts", "src/app"],
       "@app/*": ["src/app/*"],
+      "@application": ["src/application/index.ts", "src/application"],
       "@application/*": ["src/application/*"],
+      "@domain": ["src/domain/index.ts", "src/domain"],
       "@domain/*": ["src/domain/*"],
+      "@features": ["src/features/index.ts", "src/features"],
       "@features/*": ["src/features/*"],
+      "@infrastructure": ["src/infrastructure/index.ts", "src/infrastructure"],
       "@infrastructure/*": ["src/infrastructure/*"],
+      "@runtime": ["src/runtime/index.ts", "src/runtime"],
       "@runtime/*": ["src/runtime/*"],
+      "@terminal": ["src/terminal/index.ts", "src/terminal"],
       "@terminal/*": ["src/terminal/*"],
+      "@shared": ["src/shared/index.ts", "src/shared"],
       "@shared/*": ["src/shared/*"],
       "@styles/*": ["src/styles/*"],
       "@content/*": ["content/*"]
