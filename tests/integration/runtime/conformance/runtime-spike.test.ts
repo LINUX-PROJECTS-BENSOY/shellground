@@ -1,3 +1,4 @@
+// @vitest-environment node
 /**
  * SHELLGROUND Phase 0 Runtime Conformance Test Suite
  * Validates browser/WASIX execution against acceptance criteria for Issue #7.
