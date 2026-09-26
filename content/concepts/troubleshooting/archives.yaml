@@ -1,0 +1,9 @@
+id: troubleshooting.archives
+name: "Archive Extraction & Packaging (tar)"
+category: troubleshooting
+summary: "Creating and extracting tarball archives (.tar, .tar.gz) for backups and deployments."
+description: "Tape Archive (tar) bundles multiple files and directories into a single archive file. Common flags include -c (create), -x (extract), -z (gzip), and -f (file)."
+relatedCommands:
+  - tar
+prerequisites:
+  - filesystem.tree

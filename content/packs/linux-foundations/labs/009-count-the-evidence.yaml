@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: 009-count-the-evidence
+version: 1
+packId: linux-foundations
+title: "Count the Evidence (wc -l)"
+difficulty: beginner
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Count the total number of lines in /workspace/evidence.txt and save the line count to /workspace/line_count.txt."
+  context: "Quantifying records, entries, and dataset sizes is a standard triage task. Use wc -l to compute exact line counts."
+  instructions:
+    - "Run 'wc -l < /workspace/evidence.txt > /workspace/line_count.txt'."
+  successDescription: "Line count of evidence.txt is computed and recorded."
+concepts:
+  - text.wc
+prerequisites:
+  - 008-recursive-search
+fixture:
+  id: search-inspection-workspace
+  version: 1
+validators:
+  - id: check-count-file
+    type: fileExists
+    path: /workspace/line_count.txt
+  - id: check-count-content
+    type: fileContentContains
+    path: /workspace/line_count.txt
+    value: "5"
+referenceSolution:
+  - wc -l < /workspace/evidence.txt > /workspace/line_count.txt
+hints:
+  - id: wc-l-option
+    order: 1
+    category: conceptual
+    text: "The -l flag directs wc to count newlines: 'wc -l < file' outputs just the number."

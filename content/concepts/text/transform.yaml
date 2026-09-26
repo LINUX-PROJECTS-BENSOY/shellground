@@ -1,0 +1,10 @@
+id: text.transform
+name: "Stream Text Transformation (sed & tr)"
+category: text
+summary: "Performing in-flight text substitutions, deletions, and transliterations in data streams."
+description: "The sed (stream editor) and tr utilities transform character streams. sed 's/foo/bar/g' replaces all occurrences of foo with bar across matching records."
+relatedCommands:
+  - sed
+  - tr
+prerequisites:
+  - streams.pipes

@@ -1,0 +1,24 @@
+schemaVersion: 1
+id: system-admin-workspace
+version: 1
+root: /workspace
+cwd: /workspace
+directories:
+  - path: /workspace
+  - path: /workspace/scripts
+  - path: /workspace/secure
+  - path: /workspace/backup
+files:
+  - path: /workspace/scripts/run.sh
+    source:
+      type: inline
+      content: "#!/bin/bash\necho 'Service running successfully.'\n"
+    mode: "644"
+  - path: /workspace/secure/payload.txt
+    source:
+      type: inline
+      content: "INTEGRITY_VERIFIED_PAYLOAD_DATA\n"
+  - path: /workspace/backup/archive.tar
+    source:
+      type: inline
+      content: "DUMMY_TAR_ARCHIVE_DATA\n"

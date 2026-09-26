@@ -1,0 +1,28 @@
+schemaVersion: 1
+id: navigation-workspace
+version: 1
+root: /workspace
+cwd: /workspace
+directories:
+  - path: /workspace
+  - path: /workspace/projects
+  - path: /workspace/projects/frontend
+  - path: /workspace/projects/backend
+  - path: /workspace/docs
+files:
+  - path: /workspace/.bashrc
+    source:
+      type: inline
+      content: "export PS1='\\u@\\h:\\w\\$ '\n"
+  - path: /workspace/.secret_config
+    source:
+      type: inline
+      content: "API_KEY=sh_live_992144\n"
+  - path: /workspace/projects/README.md
+    source:
+      type: inline
+      content: "# Projects Directory\n"
+  - path: /workspace/docs/guide.txt
+    source:
+      type: inline
+      content: "Welcome to the Linux documentation.\n"

@@ -1,0 +1,27 @@
+schemaVersion: 1
+id: search-inspection-workspace
+version: 1
+root: /workspace
+cwd: /workspace
+directories:
+  - path: /workspace
+  - path: /workspace/logs
+  - path: /workspace/src
+  - path: /workspace/src/utils
+files:
+  - path: /workspace/logs/app.log
+    source:
+      type: inline
+      content: "INFO [2026-09-26 01:00:00] Server started successfully.\nWARN [2026-09-26 01:05:00] High memory consumption detected.\nERROR [2026-09-26 01:10:00] Database connection failure to host 10.0.0.5.\nINFO [2026-09-26 01:15:00] Healthcheck probe passed.\nERROR [2026-09-26 01:20:00] Authentication failed for user admin.\n"
+  - path: /workspace/src/main.py
+    source:
+      type: inline
+      content: "print('Application entry point')\n"
+  - path: /workspace/src/utils/scanner.py
+    source:
+      type: inline
+      content: "print('Scanner utility initialized')\n"
+  - path: /workspace/evidence.txt
+    source:
+      type: inline
+      content: "line one\nline two\nline three\nline four\nline five\n"

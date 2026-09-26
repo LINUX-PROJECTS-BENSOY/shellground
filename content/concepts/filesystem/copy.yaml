@@ -1,0 +1,9 @@
+id: filesystem.copy
+name: "Safe File Copying"
+category: filesystem
+summary: "Duplicating files and directories across destinations using cp."
+description: "The cp command creates independent duplicates of files. Preserving backups before modifying configuration files is a core sysadmin safety habit."
+relatedCommands:
+  - cp
+prerequisites:
+  - filesystem.paths

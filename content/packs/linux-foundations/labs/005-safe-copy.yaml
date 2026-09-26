@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: 005-safe-copy
+version: 1
+packId: linux-foundations
+title: "Safe Copy (cp)"
+difficulty: beginner
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Create a safety backup of the configuration file /workspace/config/app.conf by copying it to /workspace/backup/app.conf.bak."
+  context: "Before modifying critical service configurations, always make a backup copy so you can quickly restore service in the event of an error."
+  instructions:
+    - "Run 'cp /workspace/config/app.conf /workspace/backup/app.conf.bak'."
+  successDescription: "The backup configuration file is created with matching content."
+concepts:
+  - filesystem.copy
+prerequisites:
+  - 004-build-directory-tree
+fixture:
+  id: file-ops-workspace
+  version: 1
+validators:
+  - id: check-backup-exists
+    type: fileExists
+    path: /workspace/backup/app.conf.bak
+  - id: check-backup-content
+    type: fileContentEquals
+    path: /workspace/backup/app.conf.bak
+    value: "port=8080\nenv=production\n"
+referenceSolution:
+  - cp /workspace/config/app.conf /workspace/backup/app.conf.bak
+hints:
+  - id: cp-syntax
+    order: 1
+    category: conceptual
+    text: "The syntax for copying is 'cp <source> <destination>'."

@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: 010-pipeline-basics
+version: 1
+packId: linux-foundations
+title: "Pipeline Basics (cat & grep | wc)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Extract high CPU nodes (containing 'node-2' or 'node-4') from /workspace/data/metrics.txt, pipe to wc -l, and save the count (2) into /workspace/output/high_cpu_count.txt."
+  context: "UNIX pipelines connect output from one tool to the input of another, eliminating the need for temporary intermediate files."
+  instructions:
+    - "Run 'grep \"88%\\|92%\" /workspace/data/metrics.txt | wc -l > /workspace/output/high_cpu_count.txt'."
+  successDescription: "The pipeline calculates and outputs the number of high-load server nodes."
+concepts:
+  - streams.pipes
+prerequisites:
+  - 009-count-the-evidence
+fixture:
+  id: pipeline-streams-workspace
+  version: 1
+validators:
+  - id: check-count-output
+    type: fileExists
+    path: /workspace/output/high_cpu_count.txt
+  - id: check-count-val
+    type: fileContentContains
+    path: /workspace/output/high_cpu_count.txt
+    value: "2"
+referenceSolution:
+  - grep "88%\|92%" /workspace/data/metrics.txt | wc -l > /workspace/output/high_cpu_count.txt
+hints:
+  - id: pipe-syntax
+    order: 1
+    category: conceptual
+    text: "The pipe character (|) sends the stdout of the left command to the stdin of the right command."

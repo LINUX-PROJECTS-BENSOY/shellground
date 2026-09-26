@@ -1,0 +1,41 @@
+schemaVersion: 1
+id: 002-absolute-vs-relative
+version: 1
+packId: linux-foundations
+title: "Absolute vs Relative Paths (cd & ..)"
+difficulty: beginner
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Navigate into /workspace/projects/frontend using an absolute path, then navigate back to /workspace using relative navigation (cd ../..)."
+  context: "Understanding filesystem navigation is essential. Practice moving between directories using both absolute paths and relative parent references."
+  instructions:
+    - "Use 'cd /workspace/projects/frontend' to enter the nested directory."
+    - "Use 'cd ../..' to return to the workspace root directory."
+  successDescription: "Successfully navigated between directories and verified current working directory is /workspace."
+concepts:
+  - filesystem.paths
+prerequisites:
+  - 001-where-am-i
+fixture:
+  id: navigation-workspace
+  version: 1
+validators:
+  - id: check-final-cwd
+    type: cwdEquals
+    path: /workspace
+  - id: check-command-success
+    type: commandExitCode
+    expectedCode: 0
+referenceSolution:
+  - cd /workspace/projects/frontend
+  - cd ../..
+hints:
+  - id: cd-absolute
+    order: 1
+    category: conceptual
+    text: "Absolute paths start with a forward slash (/), e.g. cd /workspace/projects/frontend."
+  - id: cd-parent
+    order: 2
+    category: specific
+    text: "The special directory entry '..' represents the parent directory. cd ../.. moves up two directory levels."

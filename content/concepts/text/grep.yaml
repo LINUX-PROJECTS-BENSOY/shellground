@@ -1,0 +1,9 @@
+id: text.grep
+name: "Text Pattern Matching (grep)"
+category: text
+summary: "Searching files and standard input streams for regular expressions or substring matches."
+description: "Global Regular Expression Print (grep) filters input lines matching target patterns. Core flags include -i (case-insensitive), -v (invert), and -n (line number)."
+relatedCommands:
+  - grep
+prerequisites:
+  - filesystem.paths

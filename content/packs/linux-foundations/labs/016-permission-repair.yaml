@@ -1,0 +1,33 @@
+schemaVersion: 1
+id: 016-permission-repair
+version: 1
+packId: linux-foundations
+title: "Permission Repair (chmod)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Grant execution permissions to the deployment script /workspace/scripts/run.sh using chmod 755."
+  context: "Scripts created without execution permissions cannot be launched directly. Setting mode 755 allows user read/write/execute and group/others read/execute."
+  instructions:
+    - "Run 'chmod 755 /workspace/scripts/run.sh'."
+  successDescription: "The script /workspace/scripts/run.sh is executable with mode 755."
+concepts:
+  - security.permissions
+prerequisites:
+  - 015-transform-the-stream
+fixture:
+  id: system-admin-workspace
+  version: 1
+validators:
+  - id: check-executable-mode
+    type: fileModeEquals
+    path: /workspace/scripts/run.sh
+    mode: "755"
+referenceSolution:
+  - chmod 755 /workspace/scripts/run.sh
+hints:
+  - id: chmod-octal
+    order: 1
+    category: conceptual
+    text: "chmod 755 sets rwxr-xr-x (read, write, execute for user; read, execute for group and others)."

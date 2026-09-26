@@ -1,0 +1,40 @@
+schemaVersion: 1
+id: 020-log-investigation
+version: 1
+packId: linux-foundations
+title: "Log Investigation (Incident Triage Capstone)"
+difficulty: advanced
+estimatedMinutes: 10
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Analyze /workspace/var/log/auth.log to investigate unauthorized SSH brute force attacks. Extract the unique IP addresses that generated 'Failed password' attempts and save them into /workspace/reports/attacker_ips.txt."
+  context: "During a security incident, quick and accurate log analysis determines the scope of compromise. Combine grep, cut, sort, and uniq into a pipeline to extract attacker indicators of compromise (IOCs)."
+  instructions:
+    - "Run 'grep \"Failed password\" /workspace/var/log/auth.log | cut -d \" \" -f 11 | sort | uniq > /workspace/reports/attacker_ips.txt'."
+  successDescription: "The attacker IP addresses (192.168.1.100 and 172.16.0.99) are extracted and saved."
+concepts:
+  - forensics.log-investigation
+prerequisites:
+  - 019-archive-recovery
+fixture:
+  id: incident-triage-workspace
+  version: 1
+validators:
+  - id: check-report-file
+    type: fileExists
+    path: /workspace/reports/attacker_ips.txt
+  - id: check-attacker-1
+    type: fileContentContains
+    path: /workspace/reports/attacker_ips.txt
+    value: "192.168.1.100"
+  - id: check-attacker-2
+    type: fileContentContains
+    path: /workspace/reports/attacker_ips.txt
+    value: "172.16.0.99"
+referenceSolution:
+  - grep "Failed password" /workspace/var/log/auth.log | cut -d " " -f 11 | sort | uniq > /workspace/reports/attacker_ips.txt
+hints:
+  - id: pipeline-combination
+    order: 1
+    category: conceptual
+    text: "Chain grep to isolate failure lines, cut with space delimiter (-d ' ') to select the IP field (-f 11), then sort and uniq."

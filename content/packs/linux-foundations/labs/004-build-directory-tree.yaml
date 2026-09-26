@@ -1,0 +1,34 @@
+schemaVersion: 1
+id: 004-build-directory-tree
+version: 1
+packId: linux-foundations
+title: "Build the Directory Tree (mkdir -p)"
+difficulty: beginner
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Construct a nested directory structure /workspace/infra/cloud/aws using mkdir with the -p flag."
+  context: "When setting up projects, creating multiple parent directories one-by-one is tedious and error-prone. The -p flag creates parent directories automatically."
+  instructions:
+    - "Run 'mkdir -p /workspace/infra/cloud/aws'."
+  successDescription: "The nested directory hierarchy /workspace/infra/cloud/aws exists."
+concepts:
+  - filesystem.tree
+prerequisites:
+  - 003-hidden-files
+fixture:
+  id: navigation-workspace
+  version: 1
+validators:
+  - id: check-aws-dir
+    type: directoryContains
+    path: /workspace/infra/cloud
+    entries:
+      - aws
+referenceSolution:
+  - mkdir -p /workspace/infra/cloud/aws
+hints:
+  - id: mkdir-p-flag
+    order: 1
+    category: conceptual
+    text: "mkdir without -p fails if parent directories do not exist. Passing -p creates all necessary intermediate folders."

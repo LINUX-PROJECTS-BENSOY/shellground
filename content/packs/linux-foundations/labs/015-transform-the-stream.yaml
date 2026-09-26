@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: 015-transform-the-stream
+version: 1
+packId: linux-foundations
+title: "Transform the Stream (sed)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Replace all occurrences of 'STAGING' with 'PRODUCTION' in /workspace/data/template.txt and save the updated configuration to /workspace/data/prod.conf."
+  context: "Automating deployment environments requires template variable replacement. The stream editor (sed) performs global pattern substitution on streams."
+  instructions:
+    - "Run 'sed \"s/STAGING/PRODUCTION/g\" /workspace/data/template.txt > /workspace/data/prod.conf'."
+  successDescription: "The configuration is transformed with PRODUCTION values."
+concepts:
+  - text.transform
+prerequisites:
+  - 014-extract-the-column
+fixture:
+  id: text-processing-workspace
+  version: 1
+validators:
+  - id: check-prod-conf-exists
+    type: fileExists
+    path: /workspace/data/prod.conf
+  - id: check-prod-target
+    type: fileContentContains
+    path: /workspace/data/prod.conf
+    value: "DEPLOY_TARGET=PRODUCTION"
+referenceSolution:
+  - sed "s/STAGING/PRODUCTION/g" /workspace/data/template.txt > /workspace/data/prod.conf
+hints:
+  - id: sed-substitute
+    order: 1
+    category: conceptual
+    text: "The substitute command syntax in sed is 's/search/replace/g' where g replaces all occurrences."

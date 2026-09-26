@@ -1,0 +1,10 @@
+id: security.permissions
+name: "File Permissions & Mode Bitmask (chmod)"
+category: security
+summary: "Controlling read (r), write (w), and execute (x) permissions for user, group, and other classes."
+description: "Linux controls file access through permission bits. The chmod command modifies permissions using symbolic notation (e.g. +x) or octal notation (e.g. 755, 644)."
+relatedCommands:
+  - chmod
+  - ls
+prerequisites:
+  - filesystem.paths

@@ -1,0 +1,18 @@
+schemaVersion: 1
+id: pipeline-streams-workspace
+version: 1
+root: /workspace
+cwd: /workspace
+directories:
+  - path: /workspace
+  - path: /workspace/data
+  - path: /workspace/output
+files:
+  - path: /workspace/data/metrics.txt
+    source:
+      type: inline
+      content: "node-1: CPU 45% MEM 60%\nnode-2: CPU 92% MEM 88%\nnode-3: CPU 12% MEM 20%\nnode-4: CPU 88% MEM 74%\n"
+  - path: /workspace/data/source.txt
+    source:
+      type: inline
+      content: "Initial system configuration line 1.\nInitial system configuration line 2.\n"

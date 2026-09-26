@@ -1,0 +1,42 @@
+schemaVersion: 1
+id: 011-redirect-correctly
+version: 1
+packId: linux-foundations
+title: "Redirect Correctly (> vs >>)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Redirect /workspace/data/source.txt to /workspace/output/audit.txt using >, then append 'Final verification passed.' using >>."
+  context: "A single > overwrites the target file, while >> appends to the end of the file. Mixing them up causes data loss."
+  instructions:
+    - "Run 'cat /workspace/data/source.txt > /workspace/output/audit.txt'."
+    - "Run 'echo \"Final verification passed.\" >> /workspace/output/audit.txt'."
+  successDescription: "The audit log contains both the initial source lines and the appended verification note."
+concepts:
+  - streams.redirection
+prerequisites:
+  - 010-pipeline-basics
+fixture:
+  id: pipeline-streams-workspace
+  version: 1
+validators:
+  - id: check-audit-file
+    type: fileExists
+    path: /workspace/output/audit.txt
+  - id: check-source-content
+    type: fileContentContains
+    path: /workspace/output/audit.txt
+    value: "Initial system configuration"
+  - id: check-appended-content
+    type: fileContentContains
+    path: /workspace/output/audit.txt
+    value: "Final verification passed."
+referenceSolution:
+  - cat /workspace/data/source.txt > /workspace/output/audit.txt
+  - echo "Final verification passed." >> /workspace/output/audit.txt
+hints:
+  - id: redirect-operators
+    order: 1
+    category: conceptual
+    text: "Use > to overwrite and >> to append without destroying existing file data."
