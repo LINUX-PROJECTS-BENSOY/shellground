@@ -7,6 +7,7 @@ import type {
   PackDefinition,
   LabDefinition,
   FixtureDefinition,
+  ConceptDefinition,
 } from '../../domain/content/schemas';
 
 export interface IntegrityCheckResult {
@@ -18,6 +19,7 @@ export class PackRegistry {
   private packs = new Map<string, PackDefinition>();
   private labs = new Map<string, LabDefinition>(); // keyed by `${packId}:${labId}`
   private fixtures = new Map<string, FixtureDefinition>();
+  private concepts = new Map<string, ConceptDefinition>();
 
   public registerPack(pack: PackDefinition): void {
     this.packs.set(pack.id, pack);
@@ -30,6 +32,18 @@ export class PackRegistry {
 
   public registerFixture(fixture: FixtureDefinition): void {
     this.fixtures.set(fixture.id, fixture);
+  }
+
+  public registerConcept(concept: ConceptDefinition): void {
+    this.concepts.set(concept.id, concept);
+  }
+
+  public getConcept(conceptId: string): ConceptDefinition | undefined {
+    return this.concepts.get(conceptId);
+  }
+
+  public listConcepts(): ConceptDefinition[] {
+    return Array.from(this.concepts.values());
   }
 
   public getPack(packId: string): PackDefinition | undefined {
@@ -140,8 +154,9 @@ export class PackRegistry {
   }
 
   public clear(): void {
-    this.packs.clear( );
+    this.packs.clear();
     this.labs.clear();
     this.fixtures.clear();
+    this.concepts.clear();
   }
 }
