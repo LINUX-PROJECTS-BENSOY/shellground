@@ -158,6 +158,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               return (
                 <button
                   key={item.id}
+                  data-testid={`nav-${item.id}`}
                   onClick={() => setCurrentView(item.id)}
                   title={isSidebarCollapsed ? item.label : undefined}
                   style={{

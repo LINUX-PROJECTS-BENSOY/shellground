@@ -142,6 +142,7 @@ export class TerminalController implements ITerminalController {
     }
 
     this.containerElement = element;
+    (element as unknown as { __terminalController?: TerminalController }).__terminalController = this;
     this.terminal!.open(element);
 
     // Initialize Addons (FitAddon and WebglAddon)
@@ -270,6 +271,19 @@ export class TerminalController implements ITerminalController {
     }
   }
 
+  public getBufferText(): string {
+    if (!this.terminal) return '';
+    const buffer = this.terminal.buffer.active;
+    const lines: string[] = [];
+    for (let i = 0; i < buffer.length; i++) {
+      const line = buffer.getLine(i);
+      if (line) {
+        lines.push(line.translateToString(true));
+      }
+    }
+    return lines.join('\n');
+  }
+
   public dispose(): void {
     if (this.isDisposed) return;
     this.isDisposed = true;
@@ -294,6 +308,9 @@ export class TerminalController implements ITerminalController {
       this.terminal = null;
     }
 
+    if (this.containerElement) {
+      delete (this.containerElement as unknown as { __terminalController?: TerminalController }).__terminalController;
+    }
     this.containerElement = null;
     this.dataListeners.clear();
     this.resizeListeners.clear();

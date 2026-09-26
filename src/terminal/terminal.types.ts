@@ -93,5 +93,6 @@ export interface ITerminalController {
   onData(callback: (data: string) => void): () => void;
   onResize(callback: (dims: TerminalDimensions) => void): () => void;
   connect(processPort: TerminalProcessPort): () => void;
+  getBufferText(): string;
   dispose(): void;
 }
