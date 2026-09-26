@@ -1,0 +1,20 @@
+schemaVersion: 1
+id: file-ops-workspace
+version: 1
+root: /workspace
+cwd: /workspace
+directories:
+  - path: /workspace
+  - path: /workspace/config
+  - path: /workspace/backup
+  - path: /workspace/incoming
+  - path: /workspace/archive
+files:
+  - path: /workspace/config/app.conf
+    source:
+      type: inline
+      content: "port=8080\nenv=production\n"
+  - path: /workspace/incoming/report_draft.txt
+    source:
+      type: inline
+      content: "Quarterly server audit draft report.\n"

@@ -1,0 +1,9 @@
+id: filesystem.tree
+name: "Directory Tree Construction"
+category: filesystem
+summary: "Creating single and nested directory hierarchies using mkdir and mkdir -p."
+description: "The mkdir command creates new directories. The -p (parents) flag creates intermediate ancestor directories as needed without failing if they already exist."
+relatedCommands:
+  - mkdir
+prerequisites:
+  - filesystem.paths

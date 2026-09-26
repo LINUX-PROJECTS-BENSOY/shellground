@@ -1,0 +1,9 @@
+id: security.checksums
+name: "Cryptographic Checksums (sha256sum)"
+category: security
+summary: "Verifying file integrity and detecting tampering using SHA-256 cryptographic hashes."
+description: "Cryptographic hash functions produce fixed-length digests of file contents. sha256sum verifies that files have not been modified or corrupted in transit."
+relatedCommands:
+  - sha256sum
+prerequisites:
+  - filesystem.paths

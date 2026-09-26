@@ -1,0 +1,9 @@
+id: text.cut
+name: "Columnar Extraction (cut)"
+category: text
+summary: "Extracting designated byte, character, or delimiter-separated fields from tabular records."
+description: "The cut command extracts specific fields from text records using a specified delimiter (-d) and field index selector (-f)."
+relatedCommands:
+  - cut
+prerequisites:
+  - streams.pipes

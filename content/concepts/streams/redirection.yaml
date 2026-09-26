@@ -1,0 +1,10 @@
+id: streams.redirection
+name: "Standard Output Redirection (> and >>)"
+category: streams
+summary: "Writing command outputs directly to files, either truncating (>) or appending (>>)."
+description: "Redirection operators detach standard output from the terminal display and bind it to a file descriptor. The > operator overwrites; >> appends."
+relatedCommands:
+  - echo
+  - cat
+prerequisites:
+  - filesystem.paths

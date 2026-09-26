@@ -1,0 +1,9 @@
+id: filesystem.move
+name: "Renaming and Moving Files"
+category: filesystem
+summary: "Moving files between directories and renaming them using mv."
+description: "In POSIX filesystems, renaming a file and moving it across directory nodes are the same operation, performed by the mv command."
+relatedCommands:
+  - mv
+prerequisites:
+  - filesystem.paths

@@ -1,0 +1,14 @@
+id: forensics.log-investigation
+name: "Incident Triage & Log Forensics"
+category: forensics
+summary: "Investigating authentication and system log streams to detect suspicious activity and security breaches."
+description: "Security incident response involves parsing system logs (such as auth.log) using command pipelines (grep, cut, sort, uniq, wc) to isolate attack patterns."
+relatedCommands:
+  - grep
+  - cut
+  - sort
+  - uniq
+  - wc
+prerequisites:
+  - text.sort-uniq
+  - streams.pipes

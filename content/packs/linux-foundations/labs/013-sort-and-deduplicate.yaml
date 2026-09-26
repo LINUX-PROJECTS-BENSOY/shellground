@@ -1,0 +1,44 @@
+schemaVersion: 1
+id: 013-sort-and-deduplicate
+version: 1
+packId: linux-foundations
+title: "Sort and Deduplicate (sort & uniq)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Sort the IP records in /workspace/data/ips.txt and remove duplicate lines, saving unique addresses to /workspace/data/unique_ips.txt."
+  context: "Network and security logs frequently list repeated IP addresses. The classic 'sort | uniq' pipeline eliminates duplicate entries."
+  instructions:
+    - "Run 'sort /workspace/data/ips.txt | uniq > /workspace/data/unique_ips.txt'."
+  successDescription: "The list of unique IP addresses is saved in unique_ips.txt."
+concepts:
+  - text.sort-uniq
+prerequisites:
+  - 012-standard-error
+fixture:
+  id: text-processing-workspace
+  version: 1
+validators:
+  - id: check-unique-file
+    type: fileExists
+    path: /workspace/data/unique_ips.txt
+  - id: check-ip-10
+    type: fileContentContains
+    path: /workspace/data/unique_ips.txt
+    value: "10.0.0.1"
+  - id: check-ip-172
+    type: fileContentContains
+    path: /workspace/data/unique_ips.txt
+    value: "172.16.0.4"
+  - id: check-ip-192
+    type: fileContentContains
+    path: /workspace/data/unique_ips.txt
+    value: "192.168.1.10"
+referenceSolution:
+  - sort /workspace/data/ips.txt | uniq > /workspace/data/unique_ips.txt
+hints:
+  - id: uniq-adjacent
+    order: 1
+    category: conceptual
+    text: "uniq only detects adjacent matching lines, which is why piping from sort is required."

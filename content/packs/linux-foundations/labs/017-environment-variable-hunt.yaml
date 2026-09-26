@@ -1,0 +1,38 @@
+schemaVersion: 1
+id: 017-environment-variable-hunt
+version: 1
+packId: linux-foundations
+title: "Environment Variable Hunt (export & $VAR)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Export the environment variable APP_STAGE with value 'production' and write its value to /workspace/scripts/stage.txt."
+  context: "Linux applications rely on environment variables for external runtime configuration. The export command makes shell variables accessible to child processes."
+  instructions:
+    - "Run 'export APP_STAGE=production'."
+    - "Run 'echo \"$APP_STAGE\" > /workspace/scripts/stage.txt'."
+  successDescription: "The environment variable is exported and recorded in stage.txt."
+concepts:
+  - shell.environment
+prerequisites:
+  - 016-permission-repair
+fixture:
+  id: system-admin-workspace
+  version: 1
+validators:
+  - id: check-stage-file
+    type: fileExists
+    path: /workspace/scripts/stage.txt
+  - id: check-stage-value
+    type: fileContentContains
+    path: /workspace/scripts/stage.txt
+    value: "production"
+referenceSolution:
+  - export APP_STAGE=production
+  - echo "$APP_STAGE" > /workspace/scripts/stage.txt
+hints:
+  - id: export-syntax
+    order: 1
+    category: conceptual
+    text: "Use 'export VARNAME=value' without spaces around the equal sign."

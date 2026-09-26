@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: 018-checksum-verification
+version: 1
+packId: linux-foundations
+title: "Checksum Verification (sha256sum)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Calculate the cryptographic SHA-256 hash of /workspace/secure/payload.txt and save the output to /workspace/secure/payload.sha256."
+  context: "Cryptographic digests guarantee that downloaded binaries and sensitive configuration files have not been modified or corrupted."
+  instructions:
+    - "Run 'sha256sum /workspace/secure/payload.txt > /workspace/secure/payload.sha256'."
+  successDescription: "The SHA-256 checksum digest has been generated and recorded."
+concepts:
+  - security.checksums
+prerequisites:
+  - 017-environment-variable-hunt
+fixture:
+  id: system-admin-workspace
+  version: 1
+validators:
+  - id: check-checksum-file
+    type: fileExists
+    path: /workspace/secure/payload.sha256
+  - id: check-checksum-reference
+    type: fileContentContains
+    path: /workspace/secure/payload.sha256
+    value: "payload.txt"
+referenceSolution:
+  - sha256sum /workspace/secure/payload.txt > /workspace/secure/payload.sha256
+hints:
+  - id: sha256-syntax
+    order: 1
+    category: conceptual
+    text: "Run 'sha256sum <file>' to produce a 64-character hexadecimal digest."

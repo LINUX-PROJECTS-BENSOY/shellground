@@ -1,0 +1,11 @@
+id: shell.environment
+name: "Shell Environment Variables"
+category: shell
+summary: "Inspecting and exporting environment variables that dictate process runtime configuration."
+description: "Environment variables are inherited by child processes. The env command displays active variables; export propagates shell variables to child commands."
+relatedCommands:
+  - env
+  - export
+  - echo
+prerequisites:
+  - filesystem.cwd

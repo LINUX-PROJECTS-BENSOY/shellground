@@ -1,0 +1,9 @@
+id: filesystem.hidden-files
+name: "Hidden Files & Dotfiles"
+category: filesystem
+summary: "Files whose names begin with a period (.) are hidden by default from directory listings."
+description: "Linux systems store per-user configuration files in dotfiles (e.g. .bashrc, .profile). Passing -a or -la to ls reveals them."
+relatedCommands:
+  - ls
+prerequisites:
+  - filesystem.cwd

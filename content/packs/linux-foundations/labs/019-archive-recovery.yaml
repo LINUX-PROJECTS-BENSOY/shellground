@@ -1,0 +1,32 @@
+schemaVersion: 1
+id: 019-archive-recovery
+version: 1
+packId: linux-foundations
+title: "Archive Recovery (tar)"
+difficulty: advanced
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Create a tar archive of the /workspace/scripts directory and save it as /workspace/backup/scripts.tar using tar -cf."
+  context: "Bundling configuration and automation scripts into portable tarballs is standard for disaster recovery and system migration."
+  instructions:
+    - "Run 'tar -cf /workspace/backup/scripts.tar -C /workspace scripts'."
+  successDescription: "The tar archive scripts.tar has been created in the backup directory."
+concepts:
+  - troubleshooting.archives
+prerequisites:
+  - 018-checksum-verification
+fixture:
+  id: system-admin-workspace
+  version: 1
+validators:
+  - id: check-tar-created
+    type: fileExists
+    path: /workspace/backup/scripts.tar
+referenceSolution:
+  - tar -cf /workspace/backup/scripts.tar -C /workspace scripts
+hints:
+  - id: tar-flags
+    order: 1
+    category: conceptual
+    text: "Use -c to create and -f to specify the archive filename: 'tar -cf <archive.tar> <targets>'."

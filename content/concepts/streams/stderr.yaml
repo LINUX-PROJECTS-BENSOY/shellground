@@ -1,0 +1,10 @@
+id: streams.stderr
+name: "Standard Error Separation (2>)"
+category: streams
+summary: "Isolating diagnostic error messages (file descriptor 2) from normal standard output (file descriptor 1)."
+description: "In POSIX shells, stdout (FD 1) and stderr (FD 2) write to the terminal concurrently. Using 2> redirects errors to dedicated log files or discarding sinks (/dev/null)."
+relatedCommands:
+  - grep
+  - find
+prerequisites:
+  - streams.redirection

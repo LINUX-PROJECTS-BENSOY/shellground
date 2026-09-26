@@ -1,0 +1,35 @@
+schemaVersion: 1
+id: 006-rename-and-move
+version: 1
+packId: linux-foundations
+title: "Rename and Move (mv)"
+difficulty: beginner
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Move and rename the draft report at /workspace/incoming/report_draft.txt into /workspace/archive/report_final.txt."
+  context: "Organizing files often requires changing both their folder location and filename simultaneously. In Linux, mv handles both atomically."
+  instructions:
+    - "Run 'mv /workspace/incoming/report_draft.txt /workspace/archive/report_final.txt'."
+  successDescription: "The file is relocated and renamed to report_final.txt in the archive folder."
+concepts:
+  - filesystem.move
+prerequisites:
+  - 005-safe-copy
+fixture:
+  id: file-ops-workspace
+  version: 1
+validators:
+  - id: check-destination-file
+    type: fileExists
+    path: /workspace/archive/report_final.txt
+  - id: check-source-removed
+    type: fileNotExists
+    path: /workspace/incoming/report_draft.txt
+referenceSolution:
+  - mv /workspace/incoming/report_draft.txt /workspace/archive/report_final.txt
+hints:
+  - id: mv-syntax
+    order: 1
+    category: conceptual
+    text: "The mv command moves or renames files: 'mv <source> <target>'."

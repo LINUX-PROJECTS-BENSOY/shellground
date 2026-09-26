@@ -1,0 +1,10 @@
+id: filesystem.paths
+name: "Absolute and Relative Paths"
+category: filesystem
+summary: "Navigating directory hierarchies using relative (.) and parent (..) references versus root-based absolute paths."
+description: "Absolute paths start from the root directory (/), while relative paths resolve starting from the current working directory."
+relatedCommands:
+  - cd
+  - pwd
+prerequisites:
+  - filesystem.cwd

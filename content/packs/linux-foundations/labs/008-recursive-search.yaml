@@ -1,0 +1,40 @@
+schemaVersion: 1
+id: 008-recursive-search
+version: 1
+packId: linux-foundations
+title: "Recursive Search (find)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Locate all Python source files (*.py) in /workspace/src and save the paths to /workspace/py_files.txt."
+  context: "Codebases contain nested folders. The find command recursively searches directory trees to locate files matching specific patterns."
+  instructions:
+    - "Run 'find /workspace/src -name \"*.py\" > /workspace/py_files.txt'."
+  successDescription: "The list of Python source files in the src tree is recorded."
+concepts:
+  - filesystem.find
+prerequisites:
+  - 007-find-the-needle
+fixture:
+  id: search-inspection-workspace
+  version: 1
+validators:
+  - id: check-py-list-exists
+    type: fileExists
+    path: /workspace/py_files.txt
+  - id: check-main-py
+    type: fileContentContains
+    path: /workspace/py_files.txt
+    value: "main.py"
+  - id: check-scanner-py
+    type: fileContentContains
+    path: /workspace/py_files.txt
+    value: "scanner.py"
+referenceSolution:
+  - find /workspace/src -name "*.py" > /workspace/py_files.txt
+hints:
+  - id: find-syntax
+    order: 1
+    category: conceptual
+    text: "Use find with -name pattern: 'find <path> -name \"*.py\"'."

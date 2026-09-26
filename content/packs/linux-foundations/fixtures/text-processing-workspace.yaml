@@ -1,0 +1,21 @@
+schemaVersion: 1
+id: text-processing-workspace
+version: 1
+root: /workspace
+cwd: /workspace
+directories:
+  - path: /workspace
+  - path: /workspace/data
+files:
+  - path: /workspace/data/ips.txt
+    source:
+      type: inline
+      content: "192.168.1.10\n10.0.0.1\n192.168.1.10\n172.16.0.4\n10.0.0.1\n192.168.1.10\n"
+  - path: /workspace/data/users.csv
+    source:
+      type: inline
+      content: "id,username,department\n1,alice,engineering\n2,bob,security\n3,carol,ops\n"
+  - path: /workspace/data/template.txt
+    source:
+      type: inline
+      content: "DEPLOY_TARGET=STAGING\nDATABASE_URL=postgres://staging-db:5432/app\n"

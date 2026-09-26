@@ -1,0 +1,11 @@
+id: streams.pipes
+name: "UNIX Pipelines (|)"
+category: streams
+summary: "Connecting standard output of one command directly to standard input of another."
+description: "The pipe operator (|) connects producer processes to consumer filters, enabling modular composition of small utilities into powerful workflows."
+relatedCommands:
+  - grep
+  - wc
+  - sort
+prerequisites:
+  - text.grep

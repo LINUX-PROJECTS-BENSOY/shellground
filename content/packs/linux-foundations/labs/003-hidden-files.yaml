@@ -1,0 +1,41 @@
+schemaVersion: 1
+id: 003-hidden-files
+version: 1
+packId: linux-foundations
+title: "Hidden Files & Dotfiles (ls -a)"
+difficulty: beginner
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Inspect directory contents to discover hidden dotfiles using ls -a, and write the name of the secret config file (.secret_config) into /workspace/hidden_found.txt."
+  context: "Dotfiles are hidden by standard ls commands. System administrators and developers rely on ls -a to inspect configuration files."
+  instructions:
+    - "Run 'ls -a' to list all files, including dotfiles."
+    - "Save the string '.secret_config' into '/workspace/hidden_found.txt'."
+  successDescription: "The hidden configuration file is identified and recorded."
+concepts:
+  - filesystem.hidden-files
+prerequisites:
+  - 002-absolute-vs-relative
+fixture:
+  id: navigation-workspace
+  version: 1
+validators:
+  - id: check-file-exists
+    type: fileExists
+    path: /workspace/hidden_found.txt
+  - id: check-file-content
+    type: fileContentContains
+    path: /workspace/hidden_found.txt
+    value: ".secret_config"
+referenceSolution:
+  - echo ".secret_config" > /workspace/hidden_found.txt
+hints:
+  - id: ls-a-option
+    order: 1
+    category: conceptual
+    text: "The -a option tells ls to show all entries, including those starting with a period (.)"
+  - id: write-redirect
+    order: 2
+    category: specific
+    text: "Use redirection to write the answer: echo .secret_config > /workspace/hidden_found.txt"

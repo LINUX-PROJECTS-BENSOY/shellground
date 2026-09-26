@@ -1,0 +1,9 @@
+id: text.wc
+name: "Evidence Counting (wc)"
+category: text
+summary: "Measuring line counts, word counts, and byte sizes of files and streams."
+description: "Word Count (wc) outputs count statistics. Common options include -l for newline counts and -w for whitespace-delimited word counts."
+relatedCommands:
+  - wc
+prerequisites:
+  - filesystem.paths

@@ -1,0 +1,36 @@
+schemaVersion: 1
+id: 012-standard-error
+version: 1
+packId: linux-foundations
+title: "Standard Error (2>)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Execute a command that attempts to list a non-existent folder /workspace/missing_dir and redirect stderr (file descriptor 2) to /workspace/output/err.log."
+  context: "Programs write error messages to stderr (FD 2). Standard redirection (>) only captures stdout. Using 2> routes error diagnostics to dedicated logs."
+  instructions:
+    - "Run 'ls /workspace/missing_dir 2> /workspace/output/err.log'."
+  successDescription: "The error message is isolated in err.log."
+concepts:
+  - streams.stderr
+prerequisites:
+  - 011-redirect-correctly
+fixture:
+  id: pipeline-streams-workspace
+  version: 1
+validators:
+  - id: check-err-file
+    type: fileExists
+    path: /workspace/output/err.log
+  - id: check-err-content
+    type: fileContentContains
+    path: /workspace/output/err.log
+    value: "missing_dir"
+referenceSolution:
+  - ls /workspace/missing_dir 2> /workspace/output/err.log
+hints:
+  - id: stderr-fd
+    order: 1
+    category: conceptual
+    text: "Prefix > with file descriptor 2 to capture standard error: '2> error.log'."

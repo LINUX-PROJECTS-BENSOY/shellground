@@ -1,0 +1,9 @@
+id: filesystem.find
+name: "Recursive File Search (find)"
+category: filesystem
+summary: "Searching directory hierarchies for files matching name, type, and permission filters."
+description: "The find command traverses filesystem subtrees recursively. The -name option filters files by glob pattern, while -type f isolates regular files."
+relatedCommands:
+  - find
+prerequisites:
+  - filesystem.tree

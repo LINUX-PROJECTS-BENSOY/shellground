@@ -1,0 +1,10 @@
+id: text.sort-uniq
+name: "Sorting and Deduplicating (sort & uniq)"
+category: text
+summary: "Ordering text lines lexicographically or numerically and eliminating adjacent duplicate entries."
+description: "The sort command orders lines. The uniq command collapses duplicate adjacent lines. Combining them (sort | uniq) isolates unique records."
+relatedCommands:
+  - sort
+  - uniq
+prerequisites:
+  - streams.pipes

@@ -1,0 +1,44 @@
+schemaVersion: 1
+id: 007-find-the-needle
+version: 1
+packId: linux-foundations
+title: "Find the Needle (grep)"
+difficulty: beginner
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Filter all ERROR lines from /workspace/logs/app.log and save them to /workspace/errors.log."
+  context: "Log files contain thousands of lines. Rapidly extracting critical failure events using grep is fundamental for systems diagnostics."
+  instructions:
+    - "Run 'grep \"ERROR\" /workspace/logs/app.log > /workspace/errors.log'."
+  successDescription: "All error log records have been extracted into errors.log."
+concepts:
+  - text.grep
+prerequisites:
+  - 006-rename-and-move
+fixture:
+  id: search-inspection-workspace
+  version: 1
+validators:
+  - id: check-errors-file
+    type: fileExists
+    path: /workspace/errors.log
+  - id: check-db-error
+    type: fileContentContains
+    path: /workspace/errors.log
+    value: "Database connection failure"
+  - id: check-auth-error
+    type: fileContentContains
+    path: /workspace/errors.log
+    value: "Authentication failed"
+referenceSolution:
+  - grep "ERROR" /workspace/logs/app.log > /workspace/errors.log
+hints:
+  - id: grep-syntax
+    order: 1
+    category: conceptual
+    text: "grep searches for text patterns: 'grep <pattern> <file>'."
+  - id: grep-redirect
+    order: 2
+    category: specific
+    text: "Use redirection to save grep results: grep 'ERROR' /workspace/logs/app.log > /workspace/errors.log"

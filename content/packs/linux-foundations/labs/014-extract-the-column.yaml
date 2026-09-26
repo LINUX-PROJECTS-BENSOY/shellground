@@ -1,0 +1,40 @@
+schemaVersion: 1
+id: 014-extract-the-column
+version: 1
+packId: linux-foundations
+title: "Extract the Column (cut -d)"
+difficulty: intermediate
+estimatedMinutes: 5
+initialPrompt: "student@shellground:/workspace$ "
+mission:
+  objective: "Extract only the username column (field 2) from /workspace/data/users.csv and save the list to /workspace/data/usernames.txt."
+  context: "CSV and tabular files structure records with delimiters. The cut command with -d and -f flags extracts specific columns efficiently."
+  instructions:
+    - "Run 'cut -d \",\" -f 2 /workspace/data/users.csv > /workspace/data/usernames.txt'."
+  successDescription: "The usernames column is extracted into usernames.txt."
+concepts:
+  - text.cut
+prerequisites:
+  - 013-sort-and-deduplicate
+fixture:
+  id: text-processing-workspace
+  version: 1
+validators:
+  - id: check-usernames-file
+    type: fileExists
+    path: /workspace/data/usernames.txt
+  - id: check-alice
+    type: fileContentContains
+    path: /workspace/data/usernames.txt
+    value: "alice"
+  - id: check-bob
+    type: fileContentContains
+    path: /workspace/data/usernames.txt
+    value: "bob"
+referenceSolution:
+  - cut -d "," -f 2 /workspace/data/users.csv > /workspace/data/usernames.txt
+hints:
+  - id: cut-flags
+    order: 1
+    category: conceptual
+    text: "Use -d to specify delimiter (comma) and -f for field position: 'cut -d \",\" -f 2 file.csv'."
