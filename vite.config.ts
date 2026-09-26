@@ -2,13 +2,23 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'node:path';
 
-const securityHeaders = {
+const baseSecurityHeaders = {
   'Cross-Origin-Opener-Policy': 'same-origin',
   'Cross-Origin-Embedder-Policy': 'require-corp',
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',
   'Referrer-Policy': 'no-referrer',
   'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+};
+
+const devSecurityHeaders = {
+  ...baseSecurityHeaders,
+  'Content-Security-Policy':
+    "default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' ws: data: blob:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
+};
+
+const prodSecurityHeaders = {
+  ...baseSecurityHeaders,
   'Content-Security-Policy':
     "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' data: blob:; worker-src 'self' blob:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';",
 };
@@ -32,11 +42,11 @@ export default defineConfig({
   },
   server: {
     port: 5173,
-    headers: securityHeaders,
+    headers: devSecurityHeaders,
   },
   preview: {
     port: 4173,
-    headers: securityHeaders,
+    headers: prodSecurityHeaders,
   },
   build: {
     rollupOptions: {

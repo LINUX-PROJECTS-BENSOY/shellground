@@ -9,7 +9,7 @@ export interface AppConfig {
 
 export const APP_CONFIG: AppConfig = {
   appName: 'SHELLGROUND',
-  appVersion: '0.1.0-alpha.0',
+  appVersion: '0.1.0',
   defaultPrompt: 'student@shellground:~$ ',
   defaultShellPackage: 'wasmer/bash@1.0.25',
   docsUrl: 'https://github.com/LINUX-PROJECTS-BENSOY/shellground-docs',

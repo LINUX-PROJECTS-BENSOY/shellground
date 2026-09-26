@@ -1,7 +1,7 @@
 {
   "name": "shellground",
   "private": true,
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "type": "module",
   "description": "Browser-based Linux command training environment with WASIX sandboxing",
   "author": "LINUX-PROJECTS-BENSOY",
