@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   LayoutDashboard,
   BookOpen,
@@ -12,10 +12,13 @@ import {
   ShieldCheck,
   WifiOff,
   ExternalLink,
+  Menu,
+  X,
 } from 'lucide-react';
 import { useAppStore, type AppView } from '../../app/store/useAppStore';
 import { APP_CONFIG } from '../../app/config/app-config';
 import { Badge } from './Badge';
+import { useIsMobile } from '../hooks/useMediaQuery';
 
 interface NavItem {
   id: AppView;
@@ -34,6 +37,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     registry,
   } = useAppStore();
 
+  const isMobile = useIsMobile();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const activeLab = getActiveLab();
   const totalLabs = registry.listLabs('linux-foundations').length || 20;
   const completedCount = completedLabIds.size;
@@ -49,14 +55,14 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', width: '100vw', overflow: 'hidden' }}>
       {/* Top Application Header */}
       <header
         style={{
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 16px',
+          padding: isMobile ? '0 10px' : '0 16px',
           height: '48px',
           backgroundColor: 'var(--color-bg-subtle)',
           borderBottom: '1px solid var(--color-border-default)',
@@ -65,13 +71,32 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         }}
       >
         {/* Brand & Breadcrumbs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px' }}>
+          {isMobile && (
+            <button
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open menu"
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--color-text-primary)',
+                padding: '6px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <Menu size={20} />
+            </button>
+          )}
+
           <button
             onClick={() => setCurrentView('dashboard')}
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: '6px',
               background: 'none',
               border: 'none',
               color: 'var(--color-accent)',
@@ -86,154 +111,286 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <span>{APP_CONFIG.appName}</span>
           </button>
 
-          <span style={{ color: 'var(--color-border-default)' }}>|</span>
-
-          {currentView === 'training' && activeLab ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
-              <span style={{ color: 'var(--color-text-muted)' }}>Linux Foundations</span>
-              <span style={{ color: 'var(--color-text-muted)' }}>/</span>
-              <span style={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>{activeLab.title}</span>
-            </div>
-          ) : (
-            <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', textTransform: 'capitalize' }}>
-              {currentView}
-            </span>
+          {!isMobile && (
+            <>
+              <span style={{ color: 'var(--color-border-default)' }}>|</span>
+              {currentView === 'training' && activeLab ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px' }}>
+                  <span style={{ color: 'var(--color-text-muted)' }}>Linux Foundations</span>
+                  <span style={{ color: 'var(--color-text-muted)' }}>/</span>
+                  <span style={{ color: 'var(--color-text-primary)', fontWeight: 600 }}>{activeLab.title}</span>
+                </div>
+              ) : (
+                <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', textTransform: 'capitalize' }}>
+                  {currentView}
+                </span>
+              )}
+            </>
           )}
         </div>
 
         {/* Global Status Badges */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-            <span>Progress:</span>
-            <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-success)', fontWeight: 600 }}>
-              {completedCount}/{totalLabs}
-            </span>
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px' }}>
+          {!isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+              <span>Progress:</span>
+              <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-success)', fontWeight: 600 }}>
+                {completedCount}/{totalLabs}
+              </span>
+            </div>
+          )}
 
-          <Badge variant="isolated" icon={<WifiOff size={12} />} title="Zero external network egress permitted in sandbox">
-            Network: Disabled
-          </Badge>
+          {!isMobile && (
+            <Badge variant="isolated" icon={<WifiOff size={12} />} title="Zero external network egress permitted in sandbox">
+              Network: Disabled
+            </Badge>
+          )}
 
           <Badge variant="ready" icon={<ShieldCheck size={12} />} title="WASIX client-side WebAssembly isolation">
-            Sandbox: WASIX
+            {isMobile ? 'WASIX' : 'Sandbox: WASIX'}
           </Badge>
 
-          <a
-            href={APP_CONFIG.docsUrl}
-            target="_blank"
-            rel="noreferrer"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '12px',
-              color: 'var(--color-text-secondary)',
-              marginLeft: '4px',
-            }}
-          >
-            <span>Docs</span>
-            <ExternalLink size={12} />
-          </a>
+          {!isMobile && (
+            <a
+              href={APP_CONFIG.docsUrl}
+              target="_blank"
+              rel="noreferrer"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '12px',
+                color: 'var(--color-text-secondary)',
+                marginLeft: '4px',
+              }}
+            >
+              <span>Docs</span>
+              <ExternalLink size={12} />
+            </a>
+          )}
         </div>
       </header>
 
       {/* Workspace Body: Sidebar + Main Content */}
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        {/* Navigation Sidebar */}
-        <aside
-          style={{
-            width: isSidebarCollapsed ? '56px' : '220px',
-            backgroundColor: 'var(--color-bg-canvas)',
-            borderRight: '1px solid var(--color-border-default)',
-            display: 'flex',
-            flexDirection: 'column',
-            transition: 'width 0.2s ease',
-            zIndex: 5,
-          }}
-        >
-          {/* Navigation Links */}
-          <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '12px 8px', flex: 1 }}>
-            {navItems.map((item) => {
-              const isActive = currentView === item.id;
-              return (
-                <button
-                  key={item.id}
-                  data-testid={`nav-${item.id}`}
-                  onClick={() => setCurrentView(item.id)}
-                  title={isSidebarCollapsed ? item.label : undefined}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: isSidebarCollapsed ? '8px 10px' : '8px 12px',
-                    borderRadius: 'var(--radius-md)',
-                    border: '1px solid',
-                    borderColor: isActive ? 'var(--color-border-default)' : 'transparent',
-                    backgroundColor: isActive ? 'var(--color-bg-panel)' : 'transparent',
-                    color: isActive ? 'var(--color-text-heading)' : 'var(--color-text-secondary)',
-                    fontWeight: isActive ? 600 : 400,
-                    fontSize: '13px',
-                    textAlign: 'left',
-                    width: '100%',
-                    justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.15s ease, color 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.backgroundColor = 'var(--color-bg-subtle)';
-                      e.currentTarget.style.color = 'var(--color-text-primary)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.backgroundColor = 'transparent';
-                      e.currentTarget.style.color = 'var(--color-text-secondary)';
-                    }
-                  }}
-                >
-                  <span style={{ display: 'flex', alignItems: 'center', color: isActive ? 'var(--color-accent)' : 'inherit' }}>
-                    {item.icon}
-                  </span>
-                  {!isSidebarCollapsed && <span>{item.label}</span>}
-                </button>
-              );
-            })}
-          </nav>
-
-          {/* Sidebar Collapse Footer */}
-          <div
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
+        {/* Desktop Navigation Sidebar (hidden on mobile) */}
+        {!isMobile && (
+          <aside
             style={{
-              padding: '8px',
-              borderTop: '1px solid var(--color-border-muted)',
+              width: isSidebarCollapsed ? '56px' : '220px',
+              backgroundColor: 'var(--color-bg-canvas)',
+              borderRight: '1px solid var(--color-border-default)',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
+              flexDirection: 'column',
+              transition: 'width 0.2s ease',
+              zIndex: 5,
             }}
           >
-            {!isSidebarCollapsed && (
-              <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
-                v{APP_CONFIG.appVersion}
-              </span>
-            )}
-            <button
-              onClick={toggleSidebar}
-              aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            {/* Navigation Links */}
+            <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '12px 8px', flex: 1 }}>
+              {navItems.map((item) => {
+                const isActive = currentView === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    data-testid={`nav-${item.id}`}
+                    onClick={() => setCurrentView(item.id)}
+                    title={isSidebarCollapsed ? item.label : undefined}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: isSidebarCollapsed ? '8px 10px' : '8px 12px',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid',
+                      borderColor: isActive ? 'var(--color-border-default)' : 'transparent',
+                      backgroundColor: isActive ? 'var(--color-bg-panel)' : 'transparent',
+                      color: isActive ? 'var(--color-text-heading)' : 'var(--color-text-secondary)',
+                      fontWeight: isActive ? 600 : 400,
+                      fontSize: '13px',
+                      textAlign: 'left',
+                      width: '100%',
+                      justifyContent: isSidebarCollapsed ? 'center' : 'flex-start',
+                      cursor: 'pointer',
+                      transition: 'background-color 0.15s ease, color 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'var(--color-bg-subtle)';
+                        e.currentTarget.style.color = 'var(--color-text-primary)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.backgroundColor = 'transparent';
+                        e.currentTarget.style.color = 'var(--color-text-secondary)';
+                      }
+                    }}
+                  >
+                    <span style={{ display: 'flex', alignItems: 'center', color: isActive ? 'var(--color-accent)' : 'inherit' }}>
+                      {item.icon}
+                    </span>
+                    {!isSidebarCollapsed && <span>{item.label}</span>}
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Sidebar Collapse Footer */}
+            <div
               style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--color-text-muted)',
-                padding: '6px',
-                borderRadius: 'var(--radius-sm)',
+                padding: '8px',
+                borderTop: '1px solid var(--color-border-muted)',
                 display: 'flex',
                 alignItems: 'center',
-                cursor: 'pointer',
+                justifyContent: isSidebarCollapsed ? 'center' : 'space-between',
               }}
             >
-              {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-            </button>
+              {!isSidebarCollapsed && (
+                <span style={{ fontSize: '11px', color: 'var(--color-text-muted)', fontFamily: 'var(--font-mono)' }}>
+                  v{APP_CONFIG.appVersion}
+                </span>
+              )}
+              <button
+                onClick={toggleSidebar}
+                aria-label={isSidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--color-text-muted)',
+                  padding: '6px',
+                  borderRadius: 'var(--radius-sm)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                {isSidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              </button>
+            </div>
+          </aside>
+        )}
+
+        {/* Mobile Slide-in Navigation Drawer */}
+        {isMobile && mobileMenuOpen && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 100,
+              display: 'flex',
+            }}
+          >
+            {/* Backdrop */}
+            <div
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                position: 'fixed',
+                inset: 0,
+                backgroundColor: 'rgba(0, 0, 0, 0.65)',
+                backdropFilter: 'blur(3px)',
+              }}
+            />
+
+            {/* Drawer Panel */}
+            <div
+              style={{
+                position: 'relative',
+                width: '280px',
+                maxWidth: '85vw',
+                height: '100%',
+                backgroundColor: 'var(--color-bg-canvas)',
+                borderRight: '1px solid var(--color-border-default)',
+                display: 'flex',
+                flexDirection: 'column',
+                zIndex: 101,
+                boxShadow: '4px 0 24px rgba(0, 0, 0, 0.5)',
+              }}
+            >
+              {/* Drawer Header */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '12px 16px',
+                  borderBottom: '1px solid var(--color-border-default)',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--color-accent)', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                  <span>&gt;_</span>
+                  <span>{APP_CONFIG.appName}</span>
+                </div>
+                <button
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-label="Close menu"
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--color-text-secondary)',
+                    cursor: 'pointer',
+                    padding: '4px',
+                    display: 'flex',
+                    alignItems: 'center',
+                  }}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Drawer Nav Items */}
+              <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '16px 12px', flex: 1, overflowY: 'auto' }}>
+                {navItems.map((item) => {
+                  const isActive = currentView === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      data-testid={`mobile-nav-${item.id}`}
+                      onClick={() => {
+                        setCurrentView(item.id);
+                        setMobileMenuOpen(false);
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '12px',
+                        padding: '10px 14px',
+                        borderRadius: 'var(--radius-md)',
+                        border: '1px solid',
+                        borderColor: isActive ? 'var(--color-border-default)' : 'transparent',
+                        backgroundColor: isActive ? 'var(--color-bg-panel)' : 'transparent',
+                        color: isActive ? 'var(--color-text-heading)' : 'var(--color-text-secondary)',
+                        fontWeight: isActive ? 600 : 400,
+                        fontSize: '14px',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', color: isActive ? 'var(--color-accent)' : 'inherit' }}>
+                        {item.icon}
+                      </span>
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </nav>
+
+              {/* Drawer Footer */}
+              <div style={{ padding: '16px', borderTop: '1px solid var(--color-border-default)', display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span>Progress</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--color-success)', fontWeight: 600 }}>
+                    {completedCount}/{totalLabs} labs
+                  </span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: 'var(--color-text-muted)' }}>
+                  <span>Sandbox: WASIX Isolated</span>
+                  <span style={{ fontFamily: 'var(--font-mono)' }}>v{APP_CONFIG.appVersion}</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </aside>
+        )}
 
         {/* Main Content Area */}
         <main style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', position: 'relative' }}>
@@ -243,3 +400,4 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     </div>
   );
 };
+

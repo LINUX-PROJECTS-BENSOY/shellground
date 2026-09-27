@@ -624,12 +624,28 @@ export class InteractiveLabSession implements TerminalProcessPort {
     this.emitOutput(`\x1b[32mstudent@shellground\x1b[0m:\x1b[34m${displayDir}\x1b[0m$ `);
   }
 
+  private cols = 80;
+
+  public resize(cols: number, rows: number): void {
+    if (cols > 0) this.cols = cols;
+    void rows;
+  }
+
   public emitWelcomeBanner(): void {
+    const width = Math.max(36, Math.min(62, (this.cols || 80) - 2));
+    const innerWidth = width - 4;
+    const titleText = this.lab.title.length > innerWidth - 14 ? this.lab.title.slice(0, Math.max(1, innerWidth - 17)) + '...' : this.lab.title;
+    const subText = 'WASIX Sandbox: Initialized & Isolated';
+    const subDisplay = subText.length > innerWidth ? 'WASIX: Isolated' : subText;
+
+    const topBorder = `╭${'─'.repeat(width - 2)}╮`;
+    const bottomBorder = `╰${'─'.repeat(width - 2)}╯`;
+
     this.emitOutput(
-      `\r\n\x1b[36m╭────────────────────────────────────────────────────────────╮\x1b[0m\r\n` +
-      `\x1b[36m│\x1b[0m  \x1b[1;32mSHELLGROUND\x1b[0m — ${this.lab.title.padEnd(41)} \x1b[36m│\x1b[0m\r\n` +
-      `\x1b[36m│\x1b[0m  WASIX Sandbox: Initialized & Isolated                     \x1b[36m│\x1b[0m\r\n` +
-      `\x1b[36m╰────────────────────────────────────────────────────────────╯\x1b[0m\r\n\r\n`
+      `\r\n\x1b[36m${topBorder}\x1b[0m\r\n` +
+      `\x1b[36m│\x1b[0m  \x1b[1;32mSHELLGROUND\x1b[0m — ${titleText.padEnd(Math.max(0, innerWidth - 14))} \x1b[36m│\x1b[0m\r\n` +
+      `\x1b[36m│\x1b[0m  ${subDisplay.padEnd(innerWidth)} \x1b[36m│\x1b[0m\r\n` +
+      `\x1b[36m${bottomBorder}\x1b[0m\r\n\r\n`
     );
     this.emitPrompt();
   }
@@ -653,11 +669,6 @@ export class InteractiveLabSession implements TerminalProcessPort {
   public onError(callback: (error: string) => void): () => void {
     this.errorListeners.add(callback);
     return () => this.errorListeners.delete(callback);
-  }
-
-  public resize(cols: number, rows: number): void {
-    void cols;
-    void rows;
   }
 
   private emitOutput(data: string): void {

@@ -9,3 +9,4 @@ export * from './hooks/useTerminal';
 export * from './themes/dark-theme';
 export * from './addons/addon-manager';
 export * from './mock-process';
+export * from './components/TerminalTouchBar';

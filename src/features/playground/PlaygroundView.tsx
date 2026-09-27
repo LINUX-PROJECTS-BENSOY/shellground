@@ -2,13 +2,16 @@ import React, { useRef, useState, useEffect } from 'react';
 import { RotateCcw, Sparkles } from 'lucide-react';
 import { useAppStore } from '../../app/store/useAppStore';
 import { TerminalView } from '../../terminal/TerminalView';
+import { TerminalTouchBar } from '../../terminal/components/TerminalTouchBar';
 import { Button } from '../../shared/components/Button';
 import { Badge } from '../../shared/components/Badge';
 import { InteractiveLabSession } from '../training/services/InteractiveLabSession';
+import { useIsMobile } from '../../shared/hooks/useMediaQuery';
 import type { LabDefinition } from '../../domain/content/schemas';
 
 export const PlaygroundView: React.FC = () => {
   const { registry, telemetryService, repositories } = useAppStore();
+  const isMobile = useIsMobile();
 
   const dummyLab: LabDefinition = {
     id: 'playground-sandbox',
@@ -54,28 +57,31 @@ export const PlaygroundView: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '10px 16px',
+          padding: isMobile ? '8px 10px' : '10px 16px',
           backgroundColor: 'var(--color-bg-subtle)',
           borderBottom: '1px solid var(--color-border-default)',
+          flexShrink: 0,
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Sparkles size={18} color="var(--color-accent)" />
           <div>
-            <h2 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-heading)' }}>
-              Open Command Playground
+            <h2 style={{ fontSize: isMobile ? '13px' : '15px', fontWeight: 600, color: 'var(--color-text-heading)' }}>
+              {isMobile ? 'Playground' : 'Open Command Playground'}
             </h2>
-            <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
-              Zero-consequence sandbox for experimentation, pipelining, and exploratory scripting.
-            </p>
+            {!isMobile && (
+              <p style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
+                Zero-consequence sandbox for experimentation, pipelining, and exploratory scripting.
+              </p>
+            )}
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Badge variant="real">native-wasix</Badge>
-          <Badge variant="isolated">Network: Disabled</Badge>
-          <Button size="sm" variant="secondary" icon={<RotateCcw size={14} />} onClick={handleReset}>
-            Reset Sandbox
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {!isMobile && <Badge variant="real">native-wasix</Badge>}
+          {!isMobile && <Badge variant="isolated">Network: Disabled</Badge>}
+          <Button size="sm" variant="secondary" icon={<RotateCcw size={13} />} onClick={handleReset}>
+            {isMobile ? 'Reset' : 'Reset Sandbox'}
           </Button>
         </div>
       </div>
@@ -90,10 +96,16 @@ export const PlaygroundView: React.FC = () => {
               sessionRef.current?.emitWelcomeBanner();
             }}
             showStatusBar={true}
-            statusText="Playground Mode — Free Sandbox"
+            statusText={isMobile ? 'Playground' : 'Playground Mode — Free Sandbox'}
           />
         )}
       </div>
+
+      {/* Touch Accessory Bar for Mobile */}
+      {isMobile && (
+        <TerminalTouchBar processPort={sessionRef.current ?? undefined} />
+      )}
     </div>
   );
 };
+

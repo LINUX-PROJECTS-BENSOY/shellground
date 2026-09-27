@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { RotateCcw, CheckCircle, Lightbulb, Terminal as TerminalIcon } from 'lucide-react';
+import { RotateCcw, CheckCircle, Lightbulb, Terminal as TerminalIcon, BookOpen } from 'lucide-react';
 import { useAppStore } from '../../app/store/useAppStore';
 import { ValidationService } from '../../application/labs/ValidationService';
 import { calculateSessionScore } from '../../domain/mastery/calculateMastery';
 import type { SessionScoreBreakdown } from '../../domain/mastery/MasteryRecord';
 import type { ValidationSummary } from '../../domain/validation/Validator';
 import { TerminalView } from '../../terminal/TerminalView';
+import { TerminalTouchBar } from '../../terminal/components/TerminalTouchBar';
 import { Button } from '../../shared/components/Button';
 import { Badge } from '../../shared/components/Badge';
 import { MissionPanel } from './components/MissionPanel';
 import { HintDrawer } from './components/HintDrawer';
 import { ValidationModal } from './components/ValidationModal';
 import { InteractiveLabSession } from './services/InteractiveLabSession';
+import { useIsMobile } from '../../shared/hooks/useMediaQuery';
 
 export const TrainingWorkspace: React.FC = () => {
   const {
@@ -24,6 +26,9 @@ export const TrainingWorkspace: React.FC = () => {
     refreshProgress,
     selectLab,
   } = useAppStore();
+
+  const isMobile = useIsMobile();
+  const [mobileTab, setMobileTab] = useState<'terminal' | 'mission'>('terminal');
 
   const lab = getActiveLab();
   const concepts = useMemo(() => (lab ? getLabConcepts(lab) : []), [lab, getLabConcepts]);
@@ -159,90 +164,195 @@ export const TrainingWorkspace: React.FC = () => {
   const nextLab = registry.getNextLab(lab.packId, lab.id);
 
   return (
-    <div style={{ display: 'flex', height: '100%', width: '100%', overflow: 'hidden' }}>
-      {/* Left Panel: Mission & Tasks (Width: 360px) */}
-      <div style={{ width: '360px', height: '100%', flexShrink: 0 }}>
-        <MissionPanel
-          lab={lab}
-          concepts={concepts}
-          hintsUnlockedCount={unlockedHintIds.size}
-          totalHintsCount={lab.hints?.length ?? 0}
-          onOpenHints={() => setHintsDrawerOpen(true)}
-        />
-      </div>
-
-      {/* Right Area: Top Action Bar + Active Terminal */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
-        {/* Terminal Header Action Bar */}
+    <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', height: '100%', width: '100%', overflow: 'hidden' }}>
+      {/* Mobile Tab Switcher */}
+      {isMobile && (
         <div
           style={{
             display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            padding: '8px 16px',
             backgroundColor: 'var(--color-bg-subtle)',
             borderBottom: '1px solid var(--color-border-default)',
-            zIndex: 2,
+            flexShrink: 0,
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <TerminalIcon size={16} color="var(--color-accent)" />
-            <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--color-text-heading)', fontFamily: 'var(--font-mono)' }}>
-              Terminal Shell [student@shellground]
-            </span>
-            <Badge variant="real">native-wasix</Badge>
+          <button
+            onClick={() => setMobileTab('terminal')}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '10px',
+              border: 'none',
+              borderBottom: mobileTab === 'terminal' ? '2px solid var(--color-accent)' : '2px solid transparent',
+              backgroundColor: mobileTab === 'terminal' ? 'var(--color-bg-panel)' : 'transparent',
+              color: mobileTab === 'terminal' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+              fontWeight: mobileTab === 'terminal' ? 600 : 400,
+              fontSize: '13px',
+              fontFamily: 'var(--font-mono)',
+              cursor: 'pointer',
+            }}
+          >
+            <TerminalIcon size={14} />
+            <span>Terminal</span>
+          </button>
+
+          <button
+            onClick={() => setMobileTab('mission')}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '10px',
+              border: 'none',
+              borderBottom: mobileTab === 'mission' ? '2px solid var(--color-accent)' : '2px solid transparent',
+              backgroundColor: mobileTab === 'mission' ? 'var(--color-bg-panel)' : 'transparent',
+              color: mobileTab === 'mission' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+              fontWeight: mobileTab === 'mission' ? 600 : 400,
+              fontSize: '13px',
+              cursor: 'pointer',
+            }}
+          >
+            <BookOpen size={14} />
+            <span>Mission & Tasks</span>
+          </button>
+        </div>
+      )}
+
+      {/* Left Panel: Mission & Tasks */}
+      {(!isMobile || mobileTab === 'mission') && (
+        <div
+          style={{
+            width: isMobile ? '100%' : '360px',
+            height: isMobile ? 'calc(100% - 41px)' : '100%',
+            flexShrink: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ flex: 1, overflowY: 'auto' }}>
+            <MissionPanel
+              lab={lab}
+              concepts={concepts}
+              hintsUnlockedCount={unlockedHintIds.size}
+              totalHintsCount={lab.hints?.length ?? 0}
+              onOpenHints={() => setHintsDrawerOpen(true)}
+            />
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Button
-              size="sm"
-              variant="secondary"
-              icon={<RotateCcw size={14} />}
-              onClick={handleResetLab}
-              title="Re-hydrates the pristine lab fixture"
+          {isMobile && (
+            <div
+              style={{
+                padding: '10px 14px',
+                borderTop: '1px solid var(--color-border-default)',
+                backgroundColor: 'var(--color-bg-subtle)',
+              }}
             >
-              Reset Sandbox
-            </Button>
+              <Button
+                variant="primary"
+                size="md"
+                icon={<TerminalIcon size={16} />}
+                onClick={() => setMobileTab('terminal')}
+                style={{ width: '100%' }}
+              >
+                Back to Terminal
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
 
-            {lab.hints && lab.hints.length > 0 && (
+      {/* Right Area: Action Bar + Active Terminal */}
+      {(!isMobile || mobileTab === 'terminal') && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+          {/* Terminal Header Action Bar */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: isMobile ? '6px 10px' : '8px 16px',
+              backgroundColor: 'var(--color-bg-subtle)',
+              borderBottom: '1px solid var(--color-border-default)',
+              zIndex: 2,
+              flexShrink: 0,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '10px' }}>
+              <TerminalIcon size={16} color="var(--color-accent)" />
+              <span
+                style={{
+                  fontSize: isMobile ? '12px' : '13px',
+                  fontWeight: 600,
+                  color: 'var(--color-text-heading)',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                {isMobile ? 'Terminal' : 'Terminal Shell [student@shellground]'}
+              </span>
+              {!isMobile && <Badge variant="real">native-wasix</Badge>}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '8px' }}>
               <Button
                 size="sm"
                 variant="secondary"
-                icon={<Lightbulb size={14} color="var(--color-warning)" />}
-                onClick={() => setHintsDrawerOpen(true)}
+                icon={<RotateCcw size={13} />}
+                onClick={handleResetLab}
+                title="Re-hydrates the pristine lab fixture"
               >
-                Hints ({unlockedHintIds.size}/{lab.hints.length})
+                {isMobile ? 'Reset' : 'Reset Sandbox'}
               </Button>
-            )}
 
-            <Button
-              size="sm"
-              variant="primary"
-              icon={<CheckCircle size={14} />}
-              onClick={handleValidate}
-              disabled={isValidating}
-              title="Shortcut: Ctrl+Enter"
-            >
-              {isValidating ? 'Validating...' : 'Validate (Ctrl+Enter)'}
-            </Button>
+              {lab.hints && lab.hints.length > 0 && (
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  icon={<Lightbulb size={13} color="var(--color-warning)" />}
+                  onClick={() => setHintsDrawerOpen(true)}
+                >
+                  {isMobile ? `Hints (${unlockedHintIds.size})` : `Hints (${unlockedHintIds.size}/${lab.hints.length})`}
+                </Button>
+              )}
+
+              <Button
+                size="sm"
+                variant="primary"
+                icon={<CheckCircle size={14} />}
+                onClick={handleValidate}
+                disabled={isValidating}
+                title="Shortcut: Ctrl+Enter"
+              >
+                {isValidating ? 'Validating...' : isMobile ? 'Validate' : 'Validate (Ctrl+Enter)'}
+              </Button>
+            </div>
           </div>
-        </div>
 
-        {/* Terminal Presentation Container */}
-        <div style={{ flex: 1, backgroundColor: 'var(--terminal-bg)', overflow: 'hidden', position: 'relative' }}>
-          {sessionRef.current && (
-            <TerminalView
-              key={sessionKey}
-              processPort={sessionRef.current}
-              onTerminalReady={() => {
-                sessionRef.current?.emitWelcomeBanner();
-              }}
-              showStatusBar={true}
-              statusText={`Active Session — Attempt #${attempts}`}
-            />
+          {/* Terminal Presentation Container */}
+          <div style={{ flex: 1, backgroundColor: 'var(--terminal-bg)', overflow: 'hidden', position: 'relative' }}>
+            {sessionRef.current && (
+              <TerminalView
+                key={sessionKey}
+                processPort={sessionRef.current}
+                onTerminalReady={() => {
+                  sessionRef.current?.emitWelcomeBanner();
+                }}
+                showStatusBar={true}
+                statusText={isMobile ? `#${attempts}` : `Active Session — Attempt #${attempts}`}
+              />
+            )}
+          </div>
+
+          {/* Touch Accessory Bar for Mobile */}
+          {isMobile && (
+            <TerminalTouchBar processPort={sessionRef.current ?? undefined} />
           )}
         </div>
-      </div>
+      )}
 
       {/* Hints Drawer Modal */}
       {lab.hints && (
@@ -273,3 +383,4 @@ export const TrainingWorkspace: React.FC = () => {
     </div>
   );
 };
+
