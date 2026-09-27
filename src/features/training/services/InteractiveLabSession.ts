@@ -14,6 +14,7 @@ import type { CommandHistoryRepository } from '../../../domain/persistence/repos
 export class InteractiveLabSession implements TerminalProcessPort {
   private outputListeners = new Set<(data: string) => void>();
   private errorListeners = new Set<(error: string) => void>();
+  private outputBuffer: string[] = [];
 
   private vfs = new Map<string, string>();
   private dirs = new Set<string>();
@@ -635,6 +636,17 @@ export class InteractiveLabSession implements TerminalProcessPort {
 
   public onOutput(callback: (data: string) => void): () => void {
     this.outputListeners.add(callback);
+    // Flush any buffered output collected before subscription
+    if (this.outputBuffer.length > 0) {
+      for (const chunk of this.outputBuffer) {
+        try {
+          callback(chunk);
+        } catch (err) {
+          console.error('[InteractiveLabSession] output error:', err);
+        }
+      }
+      this.outputBuffer = [];
+    }
     return () => this.outputListeners.delete(callback);
   }
 
@@ -649,6 +661,10 @@ export class InteractiveLabSession implements TerminalProcessPort {
   }
 
   private emitOutput(data: string): void {
+    if (this.outputListeners.size === 0) {
+      this.outputBuffer.push(data);
+      return;
+    }
     for (const listener of this.outputListeners) {
       try {
         listener(data);

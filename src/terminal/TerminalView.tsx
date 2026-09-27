@@ -5,7 +5,8 @@
  * Strict Invariant: Does not contain runtime execution or @wasmer/sdk imports.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import '@xterm/xterm/css/xterm.css';
 import { useTerminal } from './hooks/useTerminal';
 import type { TerminalController } from './TerminalController';
 import type { TerminalControllerOptions, TerminalProcessPort } from './terminal.types';
@@ -36,8 +37,11 @@ export const TerminalView: React.FC<TerminalViewProps> = ({
     autoFocus,
   });
 
+  const readyNotifiedRef = useRef<TerminalController | null>(null);
+
   useEffect(() => {
-    if (controller && isMounted && onTerminalReady) {
+    if (controller && isMounted && onTerminalReady && readyNotifiedRef.current !== controller) {
+      readyNotifiedRef.current = controller;
       onTerminalReady(controller);
     }
   }, [controller, isMounted, onTerminalReady]);
@@ -50,7 +54,8 @@ export const TerminalView: React.FC<TerminalViewProps> = ({
     >
       <div
         ref={containerRef}
-        className="terminal-host flex-1 w-full h-full overflow-hidden focus:outline-none"
+        onClick={() => controller?.focus()}
+        className="terminal-host flex-1 w-full h-full overflow-hidden focus:outline-none cursor-text"
         tabIndex={0}
         aria-label="Terminal display area"
       />
