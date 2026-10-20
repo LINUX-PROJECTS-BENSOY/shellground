@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { RotateCcw, CheckCircle, Lightbulb, Terminal as TerminalIcon, BookOpen } from 'lucide-react';
+import { RotateCcw, CheckCircle, Lightbulb, Terminal as TerminalIcon, BookOpen, FolderTree } from 'lucide-react';
 import { useAppStore } from '../../app/store/useAppStore';
 import { ValidationService } from '../../application/labs/ValidationService';
 import { calculateSessionScore } from '../../domain/mastery/calculateMastery';
@@ -14,6 +14,7 @@ import { HintDrawer } from './components/HintDrawer';
 import { ValidationModal } from './components/ValidationModal';
 import { InteractiveLabSession } from './services/InteractiveLabSession';
 import { useIsMobile } from '../../shared/hooks/useMediaQuery';
+import { FilesystemInspectorPanel } from '../filesystem-inspector';
 
 export const TrainingWorkspace: React.FC = () => {
   const {
@@ -28,7 +29,8 @@ export const TrainingWorkspace: React.FC = () => {
   } = useAppStore();
 
   const isMobile = useIsMobile();
-  const [mobileTab, setMobileTab] = useState<'terminal' | 'mission'>('terminal');
+  const [mobileTab, setMobileTab] = useState<'terminal' | 'mission' | 'files'>('terminal');
+  const [fsPanelOpen, setFsPanelOpen] = useState(false);
 
   const lab = getActiveLab();
   const concepts = useMemo(() => (lab ? getLabConcepts(lab) : []), [lab, getLabConcepts]);
@@ -219,6 +221,63 @@ export const TrainingWorkspace: React.FC = () => {
             <BookOpen size={14} />
             <span>Mission & Tasks</span>
           </button>
+
+          <button
+            onClick={() => setMobileTab('files')}
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              padding: '10px',
+              border: 'none',
+              borderBottom: mobileTab === 'files' ? '2px solid var(--color-accent)' : '2px solid transparent',
+              backgroundColor: mobileTab === 'files' ? 'var(--color-bg-panel)' : 'transparent',
+              color: mobileTab === 'files' ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+              fontWeight: mobileTab === 'files' ? 600 : 400,
+              fontSize: '13px',
+              fontFamily: 'var(--font-mono)',
+              cursor: 'pointer',
+            }}
+          >
+            <FolderTree size={14} />
+            <span>Files</span>
+          </button>
+        </div>
+      )}
+
+      {/* Mobile Panel: Filesystem Tree */}
+      {isMobile && mobileTab === 'files' && sessionRef.current && (
+        <div
+          style={{
+            width: '100%',
+            height: 'calc(100% - 41px)',
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          <div style={{ flex: 1, overflow: 'hidden' }}>
+            <FilesystemInspectorPanel session={sessionRef.current} />
+          </div>
+          <div
+            style={{
+              padding: '10px 14px',
+              borderTop: '1px solid var(--color-border-default)',
+              backgroundColor: 'var(--color-bg-subtle)',
+            }}
+          >
+            <Button
+              variant="primary"
+              size="md"
+              icon={<TerminalIcon size={16} />}
+              onClick={() => setMobileTab('terminal')}
+              style={{ width: '100%' }}
+            >
+              Back to Terminal
+            </Button>
+          </div>
         </div>
       )}
 
@@ -300,6 +359,23 @@ export const TrainingWorkspace: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '8px' }}>
               <Button
                 size="sm"
+                variant={fsPanelOpen ? 'primary' : 'secondary'}
+                icon={<FolderTree size={13} />}
+                onClick={() => {
+                  if (isMobile) {
+                    setMobileTab('files');
+                  } else {
+                    setFsPanelOpen((prev) => !prev);
+                  }
+                }}
+                title="Toggle Live Virtual Filesystem Tree"
+                aria-label="Toggle Filesystem Tree"
+              >
+                {isMobile ? 'Files' : 'Filesystem'}
+              </Button>
+
+              <Button
+                size="sm"
                 variant="secondary"
                 icon={<RotateCcw size={13} />}
                 onClick={handleResetLab}
@@ -351,6 +427,26 @@ export const TrainingWorkspace: React.FC = () => {
           {isMobile && (
             <TerminalTouchBar processPort={sessionRef.current ?? undefined} />
           )}
+        </div>
+      )}
+
+      {/* Desktop Filesystem Inspector Panel */}
+      {!isMobile && fsPanelOpen && sessionRef.current && (
+        <div
+          style={{
+            width: '320px',
+            height: '100%',
+            borderLeft: '1px solid var(--color-border-default)',
+            flexShrink: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            overflow: 'hidden',
+          }}
+        >
+          <FilesystemInspectorPanel
+            session={sessionRef.current}
+            onClose={() => setFsPanelOpen(false)}
+          />
         </div>
       )}
 

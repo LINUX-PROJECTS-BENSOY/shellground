@@ -10,11 +10,21 @@ import type { LabDefinition, FixtureDefinition } from '../../../domain/content/s
 import type { PackRegistry } from '../../../infrastructure/content/PackRegistry';
 import type { FidelityTelemetryService } from '../../../application/diagnostics/FidelityTelemetryService';
 import type { CommandHistoryRepository } from '../../../domain/persistence/repositories';
+import type {
+  IVirtualFsObservable,
+  VirtualFsSnapshot,
+  FileDetails,
+  FsMutationRecord,
+} from '../../filesystem-inspector/types';
+import { FsSnapshotEngine } from '../../filesystem-inspector/services/FsSnapshotEngine';
 
-export class InteractiveLabSession implements TerminalProcessPort {
+export class InteractiveLabSession implements TerminalProcessPort, IVirtualFsObservable {
   private outputListeners = new Set<(data: string) => void>();
   private errorListeners = new Set<(error: string) => void>();
   private outputBuffer: string[] = [];
+
+  private fsChangeListeners = new Set<(snapshot: VirtualFsSnapshot) => void>();
+  private lastMutationRecord: FsMutationRecord | null = null;
 
   private vfs = new Map<string, string>();
   private dirs = new Set<string>();
@@ -87,6 +97,9 @@ export class InteractiveLabSession implements TerminalProcessPort {
         this.env.set(k, v);
       }
     }
+
+    this.lastMutationRecord = null;
+    this.notifyFsChange();
   }
 
   public resolvePath(p: string): string {
@@ -168,6 +181,10 @@ export class InteractiveLabSession implements TerminalProcessPort {
     this.lastStderr = '';
     this.lastExitCode = 0;
 
+    const prevFiles = new Map(this.vfs);
+    const prevDirs = new Set(this.dirs);
+    const prevCwd = this.cwd;
+
     try {
       // Check for stderr redirection (2>)
       if (commandLine.includes(' 2> ')) {
@@ -232,6 +249,18 @@ export class InteractiveLabSession implements TerminalProcessPort {
       this.lastStderr = msg;
       this.lastExitCode = 1;
       this.recordTelemetry(commandLine, 1);
+    } finally {
+      const mutation = FsSnapshotEngine.detectMutations(
+        prevFiles,
+        prevDirs,
+        this.vfs,
+        this.dirs,
+        commandLine
+      );
+      if (mutation || prevCwd !== this.cwd) {
+        this.lastMutationRecord = mutation;
+        this.notifyFsChange();
+      }
     }
   }
 
@@ -384,6 +413,63 @@ export class InteractiveLabSession implements TerminalProcessPort {
       return { stdout: '', stderr: '', exitCode: 0 };
     }
 
+    if (binary === 'rm') {
+      const recursive = args.some((a) => a === '-r' || a === '-R' || a === '-rf' || a === '-fr');
+      const force = args.some((a) => a === '-f' || a === '-rf' || a === '-fr');
+      const targetArgs = args.filter((a) => !a.startsWith('-'));
+
+      if (targetArgs.length === 0) {
+        if (force) return { stdout: '', stderr: '', exitCode: 0 };
+        return { stdout: '', stderr: 'rm: missing operand', exitCode: 1 };
+      }
+
+      for (const target of targetArgs) {
+        const resolved = this.resolvePath(target);
+        if (this.dirs.has(resolved)) {
+          if (!recursive) {
+            return { stdout: '', stderr: `rm: cannot remove '${target}': Is a directory`, exitCode: 1 };
+          }
+          this.dirs.delete(resolved);
+          this.vmodes.delete(resolved);
+          for (const d of Array.from(this.dirs)) {
+            if (d.startsWith(resolved + '/')) {
+              this.dirs.delete(d);
+              this.vmodes.delete(d);
+            }
+          }
+          for (const f of Array.from(this.vfs.keys())) {
+            if (f.startsWith(resolved + '/')) {
+              this.vfs.delete(f);
+              this.vmodes.delete(f);
+            }
+          }
+        } else if (this.vfs.has(resolved)) {
+          this.vfs.delete(resolved);
+          this.vmodes.delete(resolved);
+        } else if (!force) {
+          return { stdout: '', stderr: `rm: cannot remove '${target}': No such file or directory`, exitCode: 1 };
+        }
+      }
+      return { stdout: '', stderr: '', exitCode: 0 };
+    }
+
+    if (binary === 'rmdir') {
+      const target = args[0];
+      if (!target) return { stdout: '', stderr: 'rmdir: missing operand', exitCode: 1 };
+      const resolved = this.resolvePath(target);
+      if (!this.dirs.has(resolved)) {
+        return { stdout: '', stderr: `rmdir: failed to remove '${target}': No such file or directory`, exitCode: 1 };
+      }
+      const hasChildren = Array.from(this.dirs).some((d) => d !== resolved && d.startsWith(resolved + '/')) ||
+                          Array.from(this.vfs.keys()).some((f) => f.startsWith(resolved + '/'));
+      if (hasChildren) {
+        return { stdout: '', stderr: `rmdir: failed to remove '${target}': Directory not empty`, exitCode: 1 };
+      }
+      this.dirs.delete(resolved);
+      this.vmodes.delete(resolved);
+      return { stdout: '', stderr: '', exitCode: 0 };
+    }
+
     if (binary === 'grep') {
       const patternArg = args.find((a) => !a.startsWith('-'));
       const fileArg = args.slice(args.indexOf(patternArg!) + 1).find((a) => !a.startsWith('-'));
@@ -523,7 +609,7 @@ export class InteractiveLabSession implements TerminalProcessPort {
 
     if (binary === 'help') {
       return {
-        stdout: 'SHELLGROUND Interactive Virtual Shell\r\nSupported commands: pwd, cd, ls, mkdir, cp, mv, cat, echo, grep, wc, find, sort, uniq, cut, sed, chmod, export, sha256sum, tar, clear\r\n',
+        stdout: 'SHELLGROUND Interactive Virtual Shell\r\nSupported commands: pwd, cd, ls, mkdir, cp, mv, rm, rmdir, cat, echo, grep, wc, find, sort, uniq, cut, sed, chmod, export, sha256sum, tar, clear\r\n',
         stderr: '',
         exitCode: 0,
       };
@@ -683,5 +769,46 @@ export class InteractiveLabSession implements TerminalProcessPort {
         console.error('[InteractiveLabSession] output error:', err);
       }
     }
+  }
+
+  /**
+   * Virtual Filesystem Observable Implementation
+   */
+  public getFsSnapshot(rootPath = '/workspace'): VirtualFsSnapshot {
+    return FsSnapshotEngine.buildSnapshot(
+      this.vfs,
+      this.dirs,
+      this.vmodes,
+      this.cwd,
+      rootPath,
+      this.lastMutationRecord
+    );
+  }
+
+  public onFsChange(listener: (snapshot: VirtualFsSnapshot) => void): () => void {
+    this.fsChangeListeners.add(listener);
+    return () => this.fsChangeListeners.delete(listener);
+  }
+
+  public notifyFsChange(): void {
+    if (this.fsChangeListeners.size === 0) return;
+    const snapshot = this.getFsSnapshot();
+    for (const listener of this.fsChangeListeners) {
+      try {
+        listener(snapshot);
+      } catch (err) {
+        console.error('[InteractiveLabSession] fsChangeListener error:', err);
+      }
+    }
+  }
+
+  public getFileDetails(path: string): FileDetails | null {
+    const resolved = this.resolvePath(path);
+    return FsSnapshotEngine.getFileDetails(resolved, this.vfs, this.dirs, this.vmodes);
+  }
+
+  public getRawFileContent(path: string): string | null {
+    const resolved = this.resolvePath(path);
+    return this.vfs.get(resolved) ?? null;
   }
 }

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { RotateCcw, Sparkles } from 'lucide-react';
+import { RotateCcw, Sparkles, FolderTree } from 'lucide-react';
 import { useAppStore } from '../../app/store/useAppStore';
 import { TerminalView } from '../../terminal/TerminalView';
 import { TerminalTouchBar } from '../../terminal/components/TerminalTouchBar';
@@ -7,11 +7,13 @@ import { Button } from '../../shared/components/Button';
 import { Badge } from '../../shared/components/Badge';
 import { InteractiveLabSession } from '../training/services/InteractiveLabSession';
 import { useIsMobile } from '../../shared/hooks/useMediaQuery';
+import { FilesystemInspectorPanel } from '../filesystem-inspector';
 import type { LabDefinition } from '../../domain/content/schemas';
 
 export const PlaygroundView: React.FC = () => {
   const { registry, telemetryService, repositories } = useAppStore();
   const isMobile = useIsMobile();
+  const [fsPanelOpen, setFsPanelOpen] = useState(false);
 
   const dummyLab: LabDefinition = {
     id: 'playground-sandbox',
@@ -80,31 +82,67 @@ export const PlaygroundView: React.FC = () => {
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {!isMobile && <Badge variant="real">native-wasix</Badge>}
           {!isMobile && <Badge variant="isolated">Network: Disabled</Badge>}
+          <Button
+            size="sm"
+            variant={fsPanelOpen ? 'primary' : 'secondary'}
+            icon={<FolderTree size={13} />}
+            onClick={() => setFsPanelOpen((prev) => !prev)}
+            title="Toggle Visual Filesystem Tree"
+          >
+            {isMobile ? 'Files' : 'Filesystem'}
+          </Button>
           <Button size="sm" variant="secondary" icon={<RotateCcw size={13} />} onClick={handleReset}>
             {isMobile ? 'Reset' : 'Reset Sandbox'}
           </Button>
         </div>
       </div>
 
-      {/* Terminal View Container */}
-      <div style={{ flex: 1, backgroundColor: 'var(--terminal-bg)', overflow: 'hidden', position: 'relative' }}>
-        {sessionRef.current && (
-          <TerminalView
-            key={sessionKey}
-            processPort={sessionRef.current}
-            onTerminalReady={() => {
-              sessionRef.current?.emitWelcomeBanner();
+      {/* Workspace Area: Terminal + Filesystem Panel */}
+      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
+        {/* Terminal View Container */}
+        {(!isMobile || !fsPanelOpen) && (
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+            <div style={{ flex: 1, backgroundColor: 'var(--terminal-bg)', overflow: 'hidden', position: 'relative' }}>
+              {sessionRef.current && (
+                <TerminalView
+                  key={sessionKey}
+                  processPort={sessionRef.current}
+                  onTerminalReady={() => {
+                    sessionRef.current?.emitWelcomeBanner();
+                  }}
+                  showStatusBar={true}
+                  statusText={isMobile ? 'Playground' : 'Playground Mode — Free Sandbox'}
+                />
+              )}
+            </div>
+
+            {/* Touch Accessory Bar for Mobile */}
+            {isMobile && (
+              <TerminalTouchBar processPort={sessionRef.current ?? undefined} />
+            )}
+          </div>
+        )}
+
+        {/* Filesystem Inspector Panel */}
+        {fsPanelOpen && sessionRef.current && (
+          <div
+            style={{
+              width: isMobile ? '100%' : '320px',
+              height: '100%',
+              borderLeft: isMobile ? 'none' : '1px solid var(--color-border-default)',
+              flexShrink: 0,
+              display: 'flex',
+              flexDirection: 'column',
+              overflow: 'hidden',
             }}
-            showStatusBar={true}
-            statusText={isMobile ? 'Playground' : 'Playground Mode — Free Sandbox'}
-          />
+          >
+            <FilesystemInspectorPanel
+              session={sessionRef.current}
+              onClose={() => setFsPanelOpen(false)}
+            />
+          </div>
         )}
       </div>
-
-      {/* Touch Accessory Bar for Mobile */}
-      {isMobile && (
-        <TerminalTouchBar processPort={sessionRef.current ?? undefined} />
-      )}
     </div>
   );
 };
