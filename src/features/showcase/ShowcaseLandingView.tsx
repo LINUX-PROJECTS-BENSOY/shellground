@@ -18,14 +18,22 @@ import {
   ChevronDown,
   Activity,
   Flame,
+  Volume2,
+  VolumeX,
+  Binary,
 } from 'lucide-react';
 import { useAppStore } from '../../app/store/useAppStore';
 import { HeroTerminalSimulator } from './components/HeroTerminalSimulator';
 import { InteractiveFeatureTour } from './components/InteractiveFeatureTour';
 import { CyberParticleCanvas } from './components/CyberParticleCanvas';
+import { MatrixRainCanvas } from './components/MatrixRainCanvas';
+import { SystemLiveGauges } from './components/SystemLiveGauges';
+import { MarqueeTicker } from './components/MarqueeTicker';
+import { MagneticButton } from './components/MagneticButton';
 import { TiltCard } from './components/TiltCard';
 import { ChaosSimulator } from './components/ChaosSimulator';
 import { InteractiveRadarChart } from './components/InteractiveRadarChart';
+import { soundFx } from './utils/soundEffects';
 import { APP_CONFIG } from '../../app/config/app-config';
 
 /**
@@ -77,28 +85,66 @@ export const ShowcaseLandingView: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [statsVisible, setStatsVisible] = useState(false);
 
+  // Audio, Matrix rain, and theme toggles
+  const [soundActive, setSoundActive] = useState(false);
+  const [matrixActive, setMatrixActive] = useState(true);
+  const [cyberTheme, setCyberTheme] = useState<'cyan' | 'matrix' | 'synthwave' | 'amber'>('cyan');
+
   const totalLabs = registry.listLabs('linux-foundations').length || 20;
   const completedCount = completedLabIds.size;
   const hasProgress = completedCount > 0;
 
   const handleStartTraining = () => {
+    soundFx.playSuccess();
     selectLab('001-where-am-i', 'linux-foundations');
   };
 
   const handleOpenPlayground = () => {
+    soundFx.playHover();
     setCurrentView('playground');
   };
 
   const handleOpenDashboard = () => {
+    soundFx.playHover();
     setCurrentView('dashboard');
   };
 
   const handleOpenCatalog = () => {
+    soundFx.playHover();
     setCurrentView('catalog');
   };
 
   const scrollToFeatures = () => {
+    soundFx.playHover();
     featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const toggleSound = () => {
+    const newState = soundFx.toggleSound();
+    setSoundActive(newState);
+  };
+
+  const toggleMatrix = () => {
+    soundFx.playHover();
+    setMatrixActive((prev) => !prev);
+  };
+
+  const selectTheme = (theme: 'cyan' | 'matrix' | 'synthwave' | 'amber') => {
+    soundFx.playHover();
+    setCyberTheme(theme);
+  };
+
+  const getThemeColor = () => {
+    switch (cyberTheme) {
+      case 'matrix':
+        return '#10b981';
+      case 'synthwave':
+        return '#c084fc';
+      case 'amber':
+        return '#f59e0b';
+      default:
+        return '#00f0ff';
+    }
   };
 
   // Track scroll position for top glowing progress bar
@@ -155,7 +201,7 @@ export const ShowcaseLandingView: React.FC = () => {
     <div
       ref={scrollContainerRef}
       onScroll={handleScroll}
-      className="showcase-scroll-container"
+      className={`showcase-scroll-container theme-${cyberTheme}`}
       style={{
         flex: 1,
         overflowY: 'auto',
@@ -172,6 +218,9 @@ export const ShowcaseLandingView: React.FC = () => {
         aria-hidden="true"
       />
 
+      {/* Interactive Matrix Digital Rain Canvas */}
+      {matrixActive && <MatrixRainCanvas opacity={0.25} color={getThemeColor()} />}
+
       {/* Interactive Particle Network Canvas */}
       <CyberParticleCanvas />
 
@@ -186,7 +235,7 @@ export const ShowcaseLandingView: React.FC = () => {
           left: '20%',
           width: '650px',
           height: '650px',
-          background: 'radial-gradient(circle, rgba(56, 189, 248, 0.14) 0%, rgba(129, 140, 248, 0.06) 40%, transparent 70%)',
+          background: `radial-gradient(circle, ${getThemeColor()}22 0%, rgba(129, 140, 248, 0.06) 40%, transparent 70%)`,
           pointerEvents: 'none',
           zIndex: 0,
           animation: 'floatOrb1 16s ease-in-out infinite alternate',
@@ -232,9 +281,123 @@ export const ShowcaseLandingView: React.FC = () => {
             position: 'relative',
           }}
         >
+          {/* Cyber HUD Control Cluster: Audio, Matrix, Themes */}
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              flexWrap: 'wrap',
+              zIndex: 10,
+            }}
+          >
+            <button
+              onClick={toggleSound}
+              className={`cyber-control-pill ${soundActive ? 'is-active' : ''}`}
+              title="Toggle retro cyberpunk audio sound effects"
+            >
+              {soundActive ? <Volume2 size={13} color="#00f0ff" /> : <VolumeX size={13} />}
+              <span>{soundActive ? 'Sound: ON' : 'Sound: OFF'}</span>
+            </button>
+
+            <button
+              onClick={toggleMatrix}
+              className={`cyber-control-pill ${matrixActive ? 'is-active' : ''}`}
+              title="Toggle matrix digital rain visual effect"
+            >
+              <Binary size={13} color={matrixActive ? getThemeColor() : undefined} />
+              <span>{matrixActive ? 'Matrix Rain: ON' : 'Matrix Rain: OFF'}</span>
+            </button>
+
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: 'rgba(22, 27, 34, 0.85)',
+                border: '1px solid rgba(255, 255, 255, 0.12)',
+                borderRadius: '9999px',
+                padding: '2px 4px',
+                gap: '4px',
+              }}
+            >
+              <button
+                onClick={() => selectTheme('cyan')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '4px 8px',
+                  borderRadius: '9999px',
+                  fontSize: '11px',
+                  fontFamily: 'var(--font-mono)',
+                  color: cyberTheme === 'cyan' ? '#00f0ff' : 'var(--color-text-muted)',
+                  fontWeight: cyberTheme === 'cyan' ? 700 : 500,
+                  cursor: 'pointer',
+                  backgroundColor: cyberTheme === 'cyan' ? 'rgba(0, 240, 255, 0.15)' : 'transparent',
+                }}
+              >
+                💠 Cyan
+              </button>
+
+              <button
+                onClick={() => selectTheme('matrix')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '4px 8px',
+                  borderRadius: '9999px',
+                  fontSize: '11px',
+                  fontFamily: 'var(--font-mono)',
+                  color: cyberTheme === 'matrix' ? '#10b981' : 'var(--color-text-muted)',
+                  fontWeight: cyberTheme === 'matrix' ? 700 : 500,
+                  cursor: 'pointer',
+                  backgroundColor: cyberTheme === 'matrix' ? 'rgba(16, 185, 129, 0.15)' : 'transparent',
+                }}
+              >
+                🟢 Matrix
+              </button>
+
+              <button
+                onClick={() => selectTheme('synthwave')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '4px 8px',
+                  borderRadius: '9999px',
+                  fontSize: '11px',
+                  fontFamily: 'var(--font-mono)',
+                  color: cyberTheme === 'synthwave' ? '#c084fc' : 'var(--color-text-muted)',
+                  fontWeight: cyberTheme === 'synthwave' ? 700 : 500,
+                  cursor: 'pointer',
+                  backgroundColor: cyberTheme === 'synthwave' ? 'rgba(192, 132, 252, 0.15)' : 'transparent',
+                }}
+              >
+                🟣 Synth
+              </button>
+
+              <button
+                onClick={() => selectTheme('amber')}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  padding: '4px 8px',
+                  borderRadius: '9999px',
+                  fontSize: '11px',
+                  fontFamily: 'var(--font-mono)',
+                  color: cyberTheme === 'amber' ? '#f59e0b' : 'var(--color-text-muted)',
+                  fontWeight: cyberTheme === 'amber' ? 700 : 500,
+                  cursor: 'pointer',
+                  backgroundColor: cyberTheme === 'amber' ? 'rgba(245, 158, 11, 0.15)' : 'transparent',
+                }}
+              >
+                🟠 Amber
+              </button>
+            </div>
+          </div>
+
           {/* Top Glowing Pill Badge */}
           <div className="showcase-badge-pill" style={{ animation: 'cyberFloat 6s ease-in-out infinite' }}>
-            <Sparkles size={14} color="#38bdf8" />
+            <Sparkles size={14} color={getThemeColor()} />
             <span>Next-Gen Linux Academy • Native WASIX WebAssembly</span>
           </div>
 
@@ -292,7 +455,7 @@ export const ShowcaseLandingView: React.FC = () => {
             </div>
           )}
 
-          {/* High-Impact CTA Button Cluster */}
+          {/* Magnetic CTA Button Cluster */}
           <div
             style={{
               display: 'flex',
@@ -303,7 +466,7 @@ export const ShowcaseLandingView: React.FC = () => {
               marginTop: '4px',
             }}
           >
-            <button
+            <MagneticButton
               className="showcase-hero-cta"
               onClick={handleStartTraining}
               aria-label={hasProgress ? 'Resume Training' : 'Start Training Sandbox'}
@@ -311,25 +474,25 @@ export const ShowcaseLandingView: React.FC = () => {
               <Zap size={18} />
               <span>{hasProgress ? 'Resume Training' : 'Start Training Sandbox'}</span>
               <ArrowRight size={18} />
-            </button>
+            </MagneticButton>
 
-            <button
+            <MagneticButton
               className="showcase-secondary-cta"
               onClick={handleOpenPlayground}
               aria-label="Open Freeform Playground"
             >
               <Play size={16} color="var(--color-accent)" />
               <span>Open Freeform Playground</span>
-            </button>
+            </MagneticButton>
 
-            <button
+            <MagneticButton
               className="showcase-secondary-cta"
               onClick={handleOpenDashboard}
               aria-label="View Readiness Dashboard"
             >
               <BarChart3 size={16} />
               <span>Dashboard</span>
-            </button>
+            </MagneticButton>
           </div>
 
           {/* Key Assurance Indicators */}
@@ -380,6 +543,11 @@ export const ShowcaseLandingView: React.FC = () => {
           </button>
         </div>
 
+        {/* ================= CONTINUOUS INFINITE TICKER ================= */}
+        <div className="reveal-on-scroll" style={{ width: '100vw', marginLeft: 'calc(-50vw + 50%)', maxWidth: '100vw' }}>
+          <MarqueeTicker />
+        </div>
+
         {/* ================= STATS / PILLARS STRIP ================= */}
         <div
           data-stats-strip="true"
@@ -427,6 +595,11 @@ export const ShowcaseLandingView: React.FC = () => {
               Dexie IndexedDB Engine
             </div>
           </div>
+        </div>
+
+        {/* ================= LIVE SYSTEM METERS & TELEMETRY ================= */}
+        <div className="reveal-on-scroll">
+          <SystemLiveGauges />
         </div>
 
         {/* ================= INTERACTIVE BENTO DEMO TOUR ================= */}
@@ -825,7 +998,7 @@ export const ShowcaseLandingView: React.FC = () => {
             </div>
 
             <div style={{ marginTop: '24px' }}>
-              <button
+              <MagneticButton
                 className="showcase-hero-cta"
                 onClick={handleStartTraining}
                 style={{ width: '100%', justifyContent: 'center' }}
@@ -833,15 +1006,13 @@ export const ShowcaseLandingView: React.FC = () => {
                 <Zap size={16} />
                 <span>Begin Your First Mission</span>
                 <ArrowRight size={16} />
-              </button>
+              </MagneticButton>
             </div>
           </div>
         </div>
 
         {/* ================= FINAL CALL TO ACTION ================= */}
-        <div
-          className="reveal-on-scroll glow-border-card"
-        >
+        <div className="reveal-on-scroll glow-border-card">
           <div
             className="glow-border-card-inner"
             style={{
@@ -883,22 +1054,22 @@ export const ShowcaseLandingView: React.FC = () => {
             </p>
 
             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
-              <button
+              <MagneticButton
                 className="showcase-hero-cta"
                 onClick={handleStartTraining}
               >
                 <Zap size={18} />
                 <span>Start Lab 001 Now</span>
                 <ArrowRight size={18} />
-              </button>
+              </MagneticButton>
 
-              <button
+              <MagneticButton
                 className="showcase-secondary-cta"
                 onClick={handleOpenCatalog}
               >
                 <BookOpen size={16} />
                 <span>Browse All 20 Labs</span>
-              </button>
+              </MagneticButton>
             </div>
           </div>
         </div>

@@ -522,3 +522,58 @@
 .float-badge-2 {
   animation: floatBadge2 5s ease-in-out infinite;
 }
+
+/* Infinite Marquee Scroll */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+/* Cyber Control Pills */
+.cyber-control-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 9999px;
+  background: rgba(22, 27, 34, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--color-text-secondary);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  backdrop-filter: blur(8px);
+}
+
+.cyber-control-pill:hover {
+  background: rgba(56, 189, 248, 0.15);
+  border-color: #38bdf8;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.cyber-control-pill.is-active {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #00f0ff;
+  color: #00f0ff;
+  box-shadow: 0 0 12px rgba(0, 240, 255, 0.3);
+}
+
+/* Dynamic Cyber Theme Variants */
+.theme-matrix {
+  --color-accent: #10b981;
+}
+
+.theme-synthwave {
+  --color-accent: #c084fc;
+}
+
+.theme-amber {
+  --color-accent: #f59e0b;
+}

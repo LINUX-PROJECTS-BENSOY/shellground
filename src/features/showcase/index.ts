@@ -5,3 +5,8 @@ export * from './components/CyberParticleCanvas';
 export * from './components/TiltCard';
 export * from './components/ChaosSimulator';
 export * from './components/InteractiveRadarChart';
+export * from './components/MatrixRainCanvas';
+export * from './components/SystemLiveGauges';
+export * from './components/MarqueeTicker';
+export * from './components/MagneticButton';
+export * from './utils/soundEffects';
