@@ -392,3 +392,133 @@
   mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 80%);
   -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 80%);
 }
+
+/* =========================================================================
+   Ultra-Rich Animation Suite: 3D Tilt, Rotating Conic Borders, Scanlines
+   ========================================================================= */
+
+@keyframes spinGradient {
+  0% {
+    --border-angle: 0deg;
+  }
+  100% {
+    --border-angle: 360deg;
+  }
+}
+
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.glow-border-card {
+  position: relative;
+  border-radius: 16px;
+  background: #0d121c;
+  padding: 1px;
+  overflow: hidden;
+}
+
+.glow-border-card::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: 18px;
+  background: conic-gradient(
+    from var(--border-angle, 0deg),
+    transparent 0%,
+    #00f0ff 25%,
+    #3b82f6 50%,
+    #10b981 75%,
+    transparent 100%
+  );
+  animation: spinGradient 6s linear infinite;
+  z-index: 0;
+}
+
+.glow-border-card-inner {
+  position: relative;
+  background: rgba(13, 18, 28, 0.95);
+  border-radius: 15px;
+  z-index: 1;
+}
+
+/* Diagonal Light Shimmer on Text */
+@keyframes lightShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.9) 0%,
+    #00f0ff 40%,
+    #ffffff 50%,
+    #38bdf8 60%,
+    rgba(255, 255, 255, 0.9) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: lightShimmer 5s ease-in-out infinite;
+}
+
+/* Subtle CRT Scanline Sweep for Simulated Terminal */
+@keyframes crtSweep {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(1000%);
+  }
+}
+
+.terminal-scanline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 24px;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(0, 240, 255, 0.05) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: crtSweep 8s linear infinite;
+  z-index: 10;
+}
+
+/* Floating Orbiting Badges */
+@keyframes floatBadge1 {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+}
+
+@keyframes floatBadge2 {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(8px) rotate(-1deg);
+  }
+}
+
+.float-badge-1 {
+  animation: floatBadge1 4s ease-in-out infinite;
+}
+
+.float-badge-2 {
+  animation: floatBadge2 5s ease-in-out infinite;
+}

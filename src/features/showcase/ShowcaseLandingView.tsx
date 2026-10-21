@@ -16,10 +16,16 @@ import {
   BarChart3,
   ExternalLink,
   ChevronDown,
+  Activity,
+  Flame,
 } from 'lucide-react';
 import { useAppStore } from '../../app/store/useAppStore';
 import { HeroTerminalSimulator } from './components/HeroTerminalSimulator';
 import { InteractiveFeatureTour } from './components/InteractiveFeatureTour';
+import { CyberParticleCanvas } from './components/CyberParticleCanvas';
+import { TiltCard } from './components/TiltCard';
+import { ChaosSimulator } from './components/ChaosSimulator';
+import { InteractiveRadarChart } from './components/InteractiveRadarChart';
 import { APP_CONFIG } from '../../app/config/app-config';
 
 /**
@@ -166,6 +172,9 @@ export const ShowcaseLandingView: React.FC = () => {
         aria-hidden="true"
       />
 
+      {/* Interactive Particle Network Canvas */}
+      <CyberParticleCanvas />
+
       {/* Background Matrix Cyber Grid */}
       <div className="cyber-grid-canvas" />
 
@@ -208,7 +217,7 @@ export const ShowcaseLandingView: React.FC = () => {
           zIndex: 1,
           display: 'flex',
           flexDirection: 'column',
-          gap: '64px',
+          gap: '72px',
         }}
       >
         {/* ================= HERO SECTION ================= */}
@@ -220,6 +229,7 @@ export const ShowcaseLandingView: React.FC = () => {
             textAlign: 'center',
             gap: '24px',
             paddingTop: '16px',
+            position: 'relative',
           }}
         >
           {/* Top Glowing Pill Badge */}
@@ -228,9 +238,9 @@ export const ShowcaseLandingView: React.FC = () => {
             <span>Next-Gen Linux Academy • Native WASIX WebAssembly</span>
           </div>
 
-          {/* Main Billboard Headline */}
+          {/* Main Billboard Headline with Diagonal Light Shimmer */}
           <h1
-            className="showcase-gradient-text"
+            className="showcase-gradient-text text-shimmer"
             style={{
               fontSize: 'clamp(32px, 5.2vw, 58px)',
               fontWeight: 800,
@@ -354,8 +364,8 @@ export const ShowcaseLandingView: React.FC = () => {
             </span>
           </div>
 
-          {/* Live Interactive Hero Terminal Simulator */}
-          <div style={{ width: '100%', marginTop: '16px' }}>
+          {/* Live Interactive Hero Terminal Simulator with Floating Orbiters */}
+          <div style={{ width: '100%', marginTop: '16px', position: 'relative' }}>
             <HeroTerminalSimulator />
           </div>
 
@@ -420,40 +430,42 @@ export const ShowcaseLandingView: React.FC = () => {
         </div>
 
         {/* ================= INTERACTIVE BENTO DEMO TOUR ================= */}
-        <div ref={featuresRef} className="reveal-on-scroll">
-          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <span
-              style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: 'var(--color-accent)',
-                letterSpacing: '1px',
-                textTransform: 'uppercase',
-                fontFamily: 'var(--font-mono)',
-              }}
-            >
-              Interactive Feature Playground
-            </span>
-            <h2
-              style={{
-                fontSize: 'clamp(24px, 3.5vw, 36px)',
-                fontWeight: 700,
-                color: 'var(--color-text-heading)',
-                marginTop: '8px',
-                letterSpacing: '-0.5px',
-              }}
-            >
-              Test-Drive ShellGround Capabilities
-            </h2>
-            <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', maxWidth: '640px', margin: '8px auto 0' }}>
-              Experience the core innovations that make ShellGround the most intuitive browser terminal trainer.
-            </p>
-          </div>
+        <div ref={featuresRef} className="reveal-on-scroll glow-border-card">
+          <div className="glow-border-card-inner" style={{ padding: '24px' }}>
+            <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: 'var(--color-accent)',
+                  letterSpacing: '1px',
+                  textTransform: 'uppercase',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                Interactive Feature Playground
+              </span>
+              <h2
+                style={{
+                  fontSize: 'clamp(24px, 3.5vw, 36px)',
+                  fontWeight: 700,
+                  color: 'var(--color-text-heading)',
+                  marginTop: '6px',
+                  letterSpacing: '-0.5px',
+                }}
+              >
+                Test-Drive ShellGround Capabilities
+              </h2>
+              <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', maxWidth: '640px', margin: '6px auto 0' }}>
+                Experience the core innovations that make ShellGround the most intuitive browser terminal trainer.
+              </p>
+            </div>
 
-          <InteractiveFeatureTour />
+            <InteractiveFeatureTour />
+          </div>
         </div>
 
-        {/* ================= CORE FEATURES GRID ================= */}
+        {/* ================= 3D TILT CORE FEATURES GRID ================= */}
         <div>
           <div style={{ textAlign: 'center', marginBottom: '36px' }}>
             <span
@@ -492,11 +504,7 @@ export const ShowcaseLandingView: React.FC = () => {
             }}
           >
             {/* Feature 1: Spatial Filesystem Tree */}
-            <div
-              className="reveal-on-scroll reveal-delay-100 interactive-spotlight-card"
-              onMouseMove={handleCardMouseMove}
-              style={{ padding: '26px' }}
-            >
+            <TiltCard maxTilt={8} glowColor="rgba(56, 189, 248, 0.2)" className="reveal-on-scroll reveal-delay-100" style={{ padding: '26px' }}>
               <div
                 style={{
                   width: '44px',
@@ -519,14 +527,10 @@ export const ShowcaseLandingView: React.FC = () => {
                 <strong style={{ color: 'var(--color-success)' }}> +NEW </strong> and amber
                 <strong style={{ color: 'var(--color-warning)' }}> ~MOD </strong> badges the millisecond you run <code>touch</code>, <code>mkdir</code>, or <code>rm</code>.
               </p>
-            </div>
+            </TiltCard>
 
             {/* Feature 2: Native WASIX POSIX Runtime */}
-            <div
-              className="reveal-on-scroll reveal-delay-200 interactive-spotlight-card"
-              onMouseMove={handleCardMouseMove}
-              style={{ padding: '26px' }}
-            >
+            <TiltCard maxTilt={8} glowColor="rgba(16, 185, 129, 0.2)" className="reveal-on-scroll reveal-delay-200" style={{ padding: '26px' }}>
               <div
                 style={{
                   width: '44px',
@@ -548,14 +552,10 @@ export const ShowcaseLandingView: React.FC = () => {
                 True POSIX system calls compiled to WebAssembly. Full support for pipelines (<code>|</code>),
                 standard error redirection (<code>2&gt;</code>), exit codes, virtual memory, and process sandboxing.
               </p>
-            </div>
+            </TiltCard>
 
             {/* Feature 3: Automated Outcome Validation */}
-            <div
-              className="reveal-on-scroll reveal-delay-300 interactive-spotlight-card"
-              onMouseMove={handleCardMouseMove}
-              style={{ padding: '26px' }}
-            >
+            <TiltCard maxTilt={8} glowColor="rgba(192, 132, 252, 0.2)" className="reveal-on-scroll reveal-delay-300" style={{ padding: '26px' }}>
               <div
                 style={{
                   width: '44px',
@@ -577,14 +577,10 @@ export const ShowcaseLandingView: React.FC = () => {
                 Press <code>Ctrl+Enter</code> or click Validate to trigger rigorous multi-rule checking.
                 Verifies file existence, SHA256 hashes, regex contents, directory structures, and process exit codes.
               </p>
-            </div>
+            </TiltCard>
 
             {/* Feature 4: Spaced-Repetition Concept Mastery */}
-            <div
-              className="reveal-on-scroll reveal-delay-100 interactive-spotlight-card"
-              onMouseMove={handleCardMouseMove}
-              style={{ padding: '26px' }}
-            >
+            <TiltCard maxTilt={8} glowColor="rgba(245, 158, 11, 0.2)" className="reveal-on-scroll reveal-delay-100" style={{ padding: '26px' }}>
               <div
                 style={{
                   width: '44px',
@@ -606,14 +602,10 @@ export const ShowcaseLandingView: React.FC = () => {
                 Tracks retention using an algorithmic half-life decay model across 8 core Linux competencies.
                 Interactive radar charts identify knowledge gaps and recommend practice drills.
               </p>
-            </div>
+            </TiltCard>
 
             {/* Feature 5: Mobile Command Cockpit */}
-            <div
-              className="reveal-on-scroll reveal-delay-200 interactive-spotlight-card"
-              onMouseMove={handleCardMouseMove}
-              style={{ padding: '26px' }}
-            >
+            <TiltCard maxTilt={8} glowColor="rgba(56, 189, 248, 0.2)" className="reveal-on-scroll reveal-delay-200" style={{ padding: '26px' }}>
               <div
                 style={{
                   width: '44px',
@@ -635,14 +627,10 @@ export const ShowcaseLandingView: React.FC = () => {
                 Practice on the subway or couch. Dedicated on-screen accessory touchbar provides hardware
                 keys missing from mobile keyboards (<code>Tab</code>, <code>Ctrl+C</code>, <code>|</code>, <code>/</code>, <code>~</code>, <code>&gt;</code>).
               </p>
-            </div>
+            </TiltCard>
 
             {/* Feature 6: Air-Gapped Local-First Privacy */}
-            <div
-              className="reveal-on-scroll reveal-delay-300 interactive-spotlight-card"
-              onMouseMove={handleCardMouseMove}
-              style={{ padding: '26px' }}
-            >
+            <TiltCard maxTilt={8} glowColor="rgba(239, 68, 68, 0.2)" className="reveal-on-scroll reveal-delay-300" style={{ padding: '26px' }}>
               <div
                 style={{
                   width: '44px',
@@ -664,137 +652,254 @@ export const ShowcaseLandingView: React.FC = () => {
                 Zero telemetry leaves your machine. All progress, lab attempts, and command history
                 are securely stored in browser IndexedDB (Dexie). Works offline without internet connectivity.
               </p>
-            </div>
+            </TiltCard>
           </div>
         </div>
 
-        {/* ================= 3-STEP LEARNING JOURNEY ================= */}
-        <div
-          className="reveal-on-scroll interactive-spotlight-card"
-          onMouseMove={handleCardMouseMove}
-          style={{
-            padding: '40px 32px',
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-success)', fontFamily: 'var(--font-mono)' }}>
-              HOW IT WORKS
+        {/* ================= CHAOS TESTING RANGE (INTERACTIVE) ================= */}
+        <div className="reveal-on-scroll">
+          <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#ef4444',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                fontFamily: 'var(--font-mono)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              <Flame size={14} color="#ef4444" />
+              Zero Host Risk Sandbox
             </span>
-            <h2 style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-heading)', marginTop: '6px' }}>
-              Your 3-Step Journey to Linux Mastery
+            <h2
+              style={{
+                fontSize: 'clamp(24px, 3.5vw, 36px)',
+                fontWeight: 700,
+                color: 'var(--color-text-heading)',
+                marginTop: '6px',
+                letterSpacing: '-0.5px',
+              }}
+            >
+              Break Things with Complete Impunity
             </h2>
+            <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', maxWidth: '640px', margin: '6px auto 0' }}>
+              Run fork bombs, wipe <code>/*</code>, and destroy file systems. Watch the self-healing WebAssembly runtime restore a pristine kernel in 12 milliseconds.
+            </p>
           </div>
 
+          <ChaosSimulator />
+        </div>
+
+        {/* ================= RADAR SKILL MATRIX & 3-STEP JOURNEY ================= */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '24px',
+            alignItems: 'stretch',
+          }}
+        >
+          {/* Left: 8-Vector Competency Radar */}
+          <div className="reveal-on-scroll">
+            <InteractiveRadarChart />
+          </div>
+
+          {/* Right: 3-Step Journey */}
           <div
+            className="reveal-on-scroll interactive-spotlight-card"
+            onMouseMove={handleCardMouseMove}
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '24px',
+              padding: '32px',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
             }}
           >
-            {/* Step 1 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
-                PHASE 01
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+                <Activity size={18} color="var(--color-success)" />
+                <span style={{ fontSize: '12px', fontWeight: 600, color: 'var(--color-success)', fontFamily: 'var(--font-mono)' }}>
+                  CURRICULUM ARCHITECTURE
+                </span>
               </div>
-              <h4 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-heading)', margin: 0 }}>
-                Select a Real-World Mission
-              </h4>
-              <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                Pick from 20 progressive scenarios in the Linux Foundations track, ranging from navigation fundamentals to log forensics.
-              </p>
+
+              <h3 style={{ fontSize: '22px', fontWeight: 700, color: 'var(--color-text-heading)', margin: '0 0 20px' }}>
+                3 Phases to Total Command Line Mastery
+              </h3>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                {/* Step 1 */}
+                <div style={{ display: 'flex', gap: '14px' }}>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                      color: '#38bdf8',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'var(--font-mono)',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    01
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 4px' }}>
+                      Select a Real-World Mission
+                    </h4>
+                    <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
+                      Choose from 20 progressive scenarios in Linux Foundations: navigation, file ops, regex wrangling, and process forensics.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 2 */}
+                <div style={{ display: 'flex', gap: '14px' }}>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(16, 185, 129, 0.15)',
+                      color: '#34d399',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'var(--font-mono)',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    02
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 4px' }}>
+                      Execute in Isolated WASIX Memory
+                    </h4>
+                    <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
+                      Type commands with spatial directory tree feedback, hardware touch accessory bars, and instant sandbox reset.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Step 3 */}
+                <div style={{ display: 'flex', gap: '14px' }}>
+                  <div
+                    style={{
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      backgroundColor: 'rgba(192, 132, 252, 0.15)',
+                      color: '#c084fc',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontFamily: 'var(--font-mono)',
+                      fontWeight: 700,
+                      fontSize: '13px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    03
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: '15px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 4px' }}>
+                      Deterministic Verification & Decay Tracking
+                    </h4>
+                    <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.5, margin: 0 }}>
+                      Pass multi-rule criteria and track cognitive retention with mathematical half-life decay analytics.
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Step 2 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--color-success)', fontFamily: 'var(--font-mono)' }}>
-                PHASE 02
-              </div>
-              <h4 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-heading)', margin: 0 }}>
-                Execute in the Isolated Sandbox
-              </h4>
-              <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                Type commands in an authentic xterm.js terminal with live filesystem tree feedback, progressive hints, and clean sandbox reset.
-              </p>
-            </div>
-
-            {/* Step 3 */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              <div style={{ fontSize: '14px', fontWeight: 700, color: '#c084fc', fontFamily: 'var(--font-mono)' }}>
-                PHASE 03
-              </div>
-              <h4 style={{ fontSize: '16px', fontWeight: 600, color: 'var(--color-text-heading)', margin: 0 }}>
-                Automated Grading & Mastery Tracking
-              </h4>
-              <p style={{ fontSize: '13px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
-                Pass automated outcome validation checks and review your concept mastery scores with retention decay analytics.
-              </p>
+            <div style={{ marginTop: '24px' }}>
+              <button
+                className="showcase-hero-cta"
+                onClick={handleStartTraining}
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                <Zap size={16} />
+                <span>Begin Your First Mission</span>
+                <ArrowRight size={16} />
+              </button>
             </div>
           </div>
         </div>
 
         {/* ================= FINAL CALL TO ACTION ================= */}
         <div
-          className="reveal-on-scroll interactive-spotlight-card"
-          onMouseMove={handleCardMouseMove}
-          style={{
-            position: 'relative',
-            padding: '52px 32px',
-            background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(16, 185, 129, 0.08) 50%, rgba(192, 132, 252, 0.1) 100%)',
-            border: '1px solid rgba(56, 189, 248, 0.35)',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(56, 189, 248, 0.06)',
-            textAlign: 'center',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '20px',
-          }}
+          className="reveal-on-scroll glow-border-card"
         >
-          <div className="showcase-badge-pill" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.3)', color: '#34d399' }}>
-            <span>Ready to Command?</span>
-          </div>
-
-          <h2
+          <div
+            className="glow-border-card-inner"
             style={{
-              fontSize: 'clamp(26px, 4vw, 38px)',
-              fontWeight: 800,
-              color: '#ffffff',
-              margin: 0,
-              letterSpacing: '-0.5px',
+              padding: '52px 32px',
+              textAlign: 'center',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: '20px',
             }}
           >
-            Your Browser is Your Command Cockpit.
-          </h2>
+            <div className="showcase-badge-pill" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)', borderColor: 'rgba(16, 185, 129, 0.3)', color: '#34d399' }}>
+              <span>Ready to Command?</span>
+            </div>
 
-          <p
-            style={{
-              fontSize: '15px',
-              color: 'var(--color-text-secondary)',
-              maxWidth: '560px',
-              margin: 0,
-              lineHeight: 1.6,
-            }}
-          >
-            Jump straight into Lab 001: Where Am I? and experience the speed of client-side WebAssembly terminal training.
-          </p>
-
-          <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
-            <button
-              className="showcase-hero-cta"
-              onClick={handleStartTraining}
+            <h2
+              className="text-shimmer"
+              style={{
+                fontSize: 'clamp(26px, 4vw, 38px)',
+                fontWeight: 800,
+                color: '#ffffff',
+                margin: 0,
+                letterSpacing: '-0.5px',
+              }}
             >
-              <Zap size={18} />
-              <span>Start Lab 001 Now</span>
-              <ArrowRight size={18} />
-            </button>
+              Your Browser is Your Command Cockpit.
+            </h2>
 
-            <button
-              className="showcase-secondary-cta"
-              onClick={handleOpenCatalog}
+            <p
+              style={{
+                fontSize: '15px',
+                color: 'var(--color-text-secondary)',
+                maxWidth: '560px',
+                margin: 0,
+                lineHeight: 1.6,
+              }}
             >
-              <BookOpen size={16} />
-              <span>Browse All 20 Labs</span>
-            </button>
+              Jump straight into Lab 001: Where Am I? and experience the speed of client-side WebAssembly terminal training.
+            </p>
+
+            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
+              <button
+                className="showcase-hero-cta"
+                onClick={handleStartTraining}
+              >
+                <Zap size={18} />
+                <span>Start Lab 001 Now</span>
+                <ArrowRight size={18} />
+              </button>
+
+              <button
+                className="showcase-secondary-cta"
+                onClick={handleOpenCatalog}
+              >
+                <BookOpen size={16} />
+                <span>Browse All 20 Labs</span>
+              </button>
+            </div>
           </div>
         </div>
 

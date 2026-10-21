@@ -200,24 +200,33 @@ export const HeroTerminalSimulator: React.FC = () => {
             <span>guest@shellground: ~/workspace (wasix-v1.4)</span>
           </div>
 
-          {/* Status Light */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span
-              style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                backgroundColor: 'var(--color-success)',
-                boxShadow: '0 0 8px #3fb950',
-              }}
-            />
-            <span style={{ fontSize: '11px', color: 'var(--color-success)', fontFamily: 'var(--font-mono)' }}>
-              LIVE
-            </span>
+          {/* Status Light & Activity Visualizer */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {/* Live activity pulsing soundwave */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '3px' }} title={isTyping ? 'Terminal process active' : 'Terminal idle'}>
+              <div style={{ width: '3px', height: isTyping ? '14px' : '5px', backgroundColor: '#00f0ff', borderRadius: '1px', transition: 'height 0.15s ease' }} />
+              <div style={{ width: '3px', height: isTyping ? '18px' : '9px', backgroundColor: '#38bdf8', borderRadius: '1px', transition: 'height 0.15s ease' }} />
+              <div style={{ width: '3px', height: isTyping ? '12px' : '5px', backgroundColor: '#34d399', borderRadius: '1px', transition: 'height 0.15s ease' }} />
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <span
+                style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-success)',
+                  boxShadow: '0 0 8px #3fb950',
+                }}
+              />
+              <span style={{ fontSize: '11px', color: 'var(--color-success)', fontFamily: 'var(--font-mono)' }}>
+                LIVE
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Terminal Body */}
+        {/* Terminal Body with CRT scanline */}
         <div
           style={{
             minHeight: '260px',
@@ -229,8 +238,10 @@ export const HeroTerminalSimulator: React.FC = () => {
             lineHeight: '1.6',
             backgroundColor: 'var(--terminal-bg)',
             color: 'var(--terminal-fg)',
+            position: 'relative',
           }}
         >
+          <div className="terminal-scanline" />
           {lines.map((line) => (
             <div
               key={line.id}
