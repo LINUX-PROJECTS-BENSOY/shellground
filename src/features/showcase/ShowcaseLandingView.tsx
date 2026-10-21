@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Play,
   Sparkles,
@@ -15,13 +15,61 @@ import {
   Cpu,
   BarChart3,
   ExternalLink,
+  ChevronDown,
 } from 'lucide-react';
 import { useAppStore } from '../../app/store/useAppStore';
 import { HeroTerminalSimulator } from './components/HeroTerminalSimulator';
+import { InteractiveFeatureTour } from './components/InteractiveFeatureTour';
 import { APP_CONFIG } from '../../app/config/app-config';
+
+/**
+ * Animated number counter that ticks up smoothly when scrolled into view
+ */
+const AnimatedStatNumber: React.FC<{ target: number; suffix?: string; isVisible: boolean }> = ({
+  target,
+  suffix = '',
+  isVisible,
+}) => {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!isVisible) return;
+    let startTimestamp: number | null = null;
+    const duration = 1200;
+
+    const step = (timestamp: number) => {
+      if (!startTimestamp) startTimestamp = timestamp;
+      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+      const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCount(Math.floor(easeProgress * target));
+
+      if (progress < 1) {
+        window.requestAnimationFrame(step);
+      } else {
+        setCount(target);
+      }
+    };
+
+    const animId = window.requestAnimationFrame(step);
+    return () => window.cancelAnimationFrame(animId);
+  }, [isVisible, target]);
+
+  return (
+    <span>
+      {count}
+      {suffix}
+    </span>
+  );
+};
 
 export const ShowcaseLandingView: React.FC = () => {
   const { setCurrentView, selectLab, completedLabIds, registry } = useAppStore();
+
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [statsVisible, setStatsVisible] = useState(false);
 
   const totalLabs = registry.listLabs('linux-foundations').length || 20;
   const completedCount = completedLabIds.size;
@@ -43,8 +91,65 @@ export const ShowcaseLandingView: React.FC = () => {
     setCurrentView('catalog');
   };
 
+  const scrollToFeatures = () => {
+    featuresRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // Track scroll position for top glowing progress bar
+  const handleScroll = () => {
+    if (!scrollContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+    const totalScroll = scrollHeight - clientHeight;
+    if (totalScroll > 0) {
+      setScrollProgress(Math.min(100, Math.max(0, (scrollTop / totalScroll) * 100)));
+    }
+  };
+
+  // Interactive mouse spotlight tracking for glassmorphic cards
+  const handleCardMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
+    e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
+  };
+
+  // Setup intersection observer for scroll-triggered reveal animations
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            if (entry.target.getAttribute('data-stats-strip') === 'true') {
+              setStatsVisible(true);
+            }
+          }
+        });
+      },
+      {
+        root: container,
+        threshold: 0.12,
+        rootMargin: '0px 0px -40px 0px',
+      }
+    );
+
+    const elements = container.querySelectorAll('.reveal-on-scroll');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <div
+      ref={scrollContainerRef}
+      onScroll={handleScroll}
+      className="showcase-scroll-container"
       style={{
         flex: 1,
         overflowY: 'auto',
@@ -52,35 +157,44 @@ export const ShowcaseLandingView: React.FC = () => {
         backgroundColor: '#080b10',
         color: 'var(--color-text-primary)',
         position: 'relative',
-        scrollBehavior: 'smooth',
       }}
     >
-      {/* Background Cyber Ambient Radial Glows */}
+      {/* Top Glowing Scroll Progress Bar */}
+      <div
+        className="showcase-scroll-progress"
+        style={{ width: `${scrollProgress}%` }}
+        aria-hidden="true"
+      />
+
+      {/* Background Matrix Cyber Grid */}
+      <div className="cyber-grid-canvas" />
+
+      {/* Background Cyber Ambient Floating Orbs */}
       <div
         style={{
           position: 'absolute',
-          top: 0,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '100%',
-          maxWidth: '1200px',
-          height: '600px',
-          background: 'radial-gradient(circle at 50% 20%, rgba(56, 189, 248, 0.15) 0%, rgba(129, 140, 248, 0.08) 35%, transparent 70%)',
+          top: '-100px',
+          left: '20%',
+          width: '650px',
+          height: '650px',
+          background: 'radial-gradient(circle, rgba(56, 189, 248, 0.14) 0%, rgba(129, 140, 248, 0.06) 40%, transparent 70%)',
           pointerEvents: 'none',
           zIndex: 0,
+          animation: 'floatOrb1 16s ease-in-out infinite alternate',
         }}
       />
 
       <div
         style={{
           position: 'absolute',
-          top: '800px',
+          top: '900px',
           right: '5%',
-          width: '500px',
-          height: '500px',
-          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.08) 0%, transparent 60%)',
+          width: '550px',
+          height: '550px',
+          background: 'radial-gradient(circle, rgba(16, 185, 129, 0.1) 0%, rgba(6, 182, 212, 0.04) 45%, transparent 70%)',
           pointerEvents: 'none',
           zIndex: 0,
+          animation: 'floatOrb2 20s ease-in-out infinite alternate',
         }}
       />
 
@@ -89,7 +203,7 @@ export const ShowcaseLandingView: React.FC = () => {
         style={{
           maxWidth: '1120px',
           margin: '0 auto',
-          padding: '48px 24px 80px',
+          padding: '40px 24px 80px',
           position: 'relative',
           zIndex: 1,
           display: 'flex',
@@ -105,7 +219,7 @@ export const ShowcaseLandingView: React.FC = () => {
             alignItems: 'center',
             textAlign: 'center',
             gap: '24px',
-            paddingTop: '20px',
+            paddingTop: '16px',
           }}
         >
           {/* Top Glowing Pill Badge */}
@@ -118,11 +232,11 @@ export const ShowcaseLandingView: React.FC = () => {
           <h1
             className="showcase-gradient-text"
             style={{
-              fontSize: 'clamp(32px, 5vw, 56px)',
+              fontSize: 'clamp(32px, 5.2vw, 58px)',
               fontWeight: 800,
               lineHeight: 1.15,
-              letterSpacing: '-1px',
-              maxWidth: '860px',
+              letterSpacing: '-1.2px',
+              maxWidth: '880px',
               margin: 0,
             }}
           >
@@ -176,7 +290,7 @@ export const ShowcaseLandingView: React.FC = () => {
               justifyContent: 'center',
               gap: '16px',
               flexWrap: 'wrap',
-              marginTop: '8px',
+              marginTop: '4px',
             }}
           >
             <button
@@ -244,23 +358,33 @@ export const ShowcaseLandingView: React.FC = () => {
           <div style={{ width: '100%', marginTop: '16px' }}>
             <HeroTerminalSimulator />
           </div>
+
+          {/* Animated Scroll Down Indicator */}
+          <button
+            onClick={scrollToFeatures}
+            className="scroll-down-hint"
+            aria-label="Scroll down to explore interactive features"
+          >
+            <span>Scroll to explore interactive capabilities</span>
+            <ChevronDown size={18} />
+          </button>
         </div>
 
         {/* ================= STATS / PILLARS STRIP ================= */}
         <div
+          data-stats-strip="true"
+          className="reveal-on-scroll interactive-spotlight-card"
+          onMouseMove={handleCardMouseMove}
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
             gap: '16px',
-            padding: '24px',
-            backgroundColor: 'rgba(22, 27, 34, 0.5)',
-            border: '1px solid var(--color-border-default)',
-            borderRadius: '12px',
+            padding: '28px',
           }}
         >
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
-              20
+            <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--color-accent)', fontFamily: 'var(--font-mono)' }}>
+              <AnimatedStatNumber target={20} isVisible={statsVisible} />
             </div>
             <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
               Hands-On Guided Labs
@@ -268,8 +392,8 @@ export const ShowcaseLandingView: React.FC = () => {
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 800, color: 'var(--color-success)', fontFamily: 'var(--font-mono)' }}>
-              100%
+            <div style={{ fontSize: '36px', fontWeight: 800, color: 'var(--color-success)', fontFamily: 'var(--font-mono)' }}>
+              <AnimatedStatNumber target={100} suffix="%" isVisible={statsVisible} />
             </div>
             <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
               Client-Side WebAssembly
@@ -277,7 +401,7 @@ export const ShowcaseLandingView: React.FC = () => {
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 800, color: '#c084fc', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ fontSize: '36px', fontWeight: 800, color: '#c084fc', fontFamily: 'var(--font-mono)' }}>
               0 KB
             </div>
             <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
@@ -286,7 +410,7 @@ export const ShowcaseLandingView: React.FC = () => {
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 800, color: '#f59e0b', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ fontSize: '36px', fontWeight: 800, color: '#f59e0b', fontFamily: 'var(--font-mono)' }}>
               Local-First
             </div>
             <div style={{ fontSize: '13px', color: 'var(--color-text-secondary)', marginTop: '4px' }}>
@@ -295,9 +419,9 @@ export const ShowcaseLandingView: React.FC = () => {
           </div>
         </div>
 
-        {/* ================= CORE FEATURES GRID ================= */}
-        <div>
-          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+        {/* ================= INTERACTIVE BENTO DEMO TOUR ================= */}
+        <div ref={featuresRef} className="reveal-on-scroll">
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
             <span
               style={{
                 fontSize: '12px',
@@ -308,11 +432,45 @@ export const ShowcaseLandingView: React.FC = () => {
                 fontFamily: 'var(--font-mono)',
               }}
             >
+              Interactive Feature Playground
+            </span>
+            <h2
+              style={{
+                fontSize: 'clamp(24px, 3.5vw, 36px)',
+                fontWeight: 700,
+                color: 'var(--color-text-heading)',
+                marginTop: '8px',
+                letterSpacing: '-0.5px',
+              }}
+            >
+              Test-Drive ShellGround Capabilities
+            </h2>
+            <p style={{ fontSize: '15px', color: 'var(--color-text-secondary)', maxWidth: '640px', margin: '8px auto 0' }}>
+              Experience the core innovations that make ShellGround the most intuitive browser terminal trainer.
+            </p>
+          </div>
+
+          <InteractiveFeatureTour />
+        </div>
+
+        {/* ================= CORE FEATURES GRID ================= */}
+        <div>
+          <div style={{ textAlign: 'center', marginBottom: '36px' }}>
+            <span
+              style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                color: 'var(--color-success)',
+                letterSpacing: '1px',
+                textTransform: 'uppercase',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
               Engineered for Command Line Fluency
             </span>
             <h2
               style={{
-                fontSize: 'clamp(26px, 3.5vw, 36px)',
+                fontSize: 'clamp(24px, 3.5vw, 36px)',
                 fontWeight: 700,
                 color: 'var(--color-text-heading)',
                 marginTop: '8px',
@@ -334,12 +492,16 @@ export const ShowcaseLandingView: React.FC = () => {
             }}
           >
             {/* Feature 1: Spatial Filesystem Tree */}
-            <div className="showcase-card" style={{ padding: '24px' }}>
+            <div
+              className="reveal-on-scroll reveal-delay-100 interactive-spotlight-card"
+              onMouseMove={handleCardMouseMove}
+              style={{ padding: '26px' }}
+            >
               <div
                 style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '8px',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
                   backgroundColor: 'rgba(56, 189, 248, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
@@ -360,12 +522,16 @@ export const ShowcaseLandingView: React.FC = () => {
             </div>
 
             {/* Feature 2: Native WASIX POSIX Runtime */}
-            <div className="showcase-card" style={{ padding: '24px' }}>
+            <div
+              className="reveal-on-scroll reveal-delay-200 interactive-spotlight-card"
+              onMouseMove={handleCardMouseMove}
+              style={{ padding: '26px' }}
+            >
               <div
                 style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '8px',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
                   backgroundColor: 'rgba(16, 185, 129, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
@@ -385,12 +551,16 @@ export const ShowcaseLandingView: React.FC = () => {
             </div>
 
             {/* Feature 3: Automated Outcome Validation */}
-            <div className="showcase-card" style={{ padding: '24px' }}>
+            <div
+              className="reveal-on-scroll reveal-delay-300 interactive-spotlight-card"
+              onMouseMove={handleCardMouseMove}
+              style={{ padding: '26px' }}
+            >
               <div
                 style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '8px',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
                   backgroundColor: 'rgba(192, 132, 252, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
@@ -410,12 +580,16 @@ export const ShowcaseLandingView: React.FC = () => {
             </div>
 
             {/* Feature 4: Spaced-Repetition Concept Mastery */}
-            <div className="showcase-card" style={{ padding: '24px' }}>
+            <div
+              className="reveal-on-scroll reveal-delay-100 interactive-spotlight-card"
+              onMouseMove={handleCardMouseMove}
+              style={{ padding: '26px' }}
+            >
               <div
                 style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '8px',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
                   backgroundColor: 'rgba(245, 158, 11, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
@@ -435,12 +609,16 @@ export const ShowcaseLandingView: React.FC = () => {
             </div>
 
             {/* Feature 5: Mobile Command Cockpit */}
-            <div className="showcase-card" style={{ padding: '24px' }}>
+            <div
+              className="reveal-on-scroll reveal-delay-200 interactive-spotlight-card"
+              onMouseMove={handleCardMouseMove}
+              style={{ padding: '26px' }}
+            >
               <div
                 style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '8px',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
                   backgroundColor: 'rgba(56, 189, 248, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
@@ -460,12 +638,16 @@ export const ShowcaseLandingView: React.FC = () => {
             </div>
 
             {/* Feature 6: Air-Gapped Local-First Privacy */}
-            <div className="showcase-card" style={{ padding: '24px' }}>
+            <div
+              className="reveal-on-scroll reveal-delay-300 interactive-spotlight-card"
+              onMouseMove={handleCardMouseMove}
+              style={{ padding: '26px' }}
+            >
               <div
                 style={{
-                  width: '42px',
-                  height: '42px',
-                  borderRadius: '8px',
+                  width: '44px',
+                  height: '44px',
+                  borderRadius: '10px',
                   backgroundColor: 'rgba(239, 68, 68, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
@@ -488,11 +670,10 @@ export const ShowcaseLandingView: React.FC = () => {
 
         {/* ================= 3-STEP LEARNING JOURNEY ================= */}
         <div
+          className="reveal-on-scroll interactive-spotlight-card"
+          onMouseMove={handleCardMouseMove}
           style={{
-            backgroundColor: 'rgba(22, 27, 34, 0.4)',
-            border: '1px solid var(--color-border-default)',
-            borderRadius: '16px',
-            padding: '36px 28px',
+            padding: '40px 32px',
           }}
         >
           <div style={{ textAlign: 'center', marginBottom: '32px' }}>
@@ -554,13 +735,14 @@ export const ShowcaseLandingView: React.FC = () => {
 
         {/* ================= FINAL CALL TO ACTION ================= */}
         <div
+          className="reveal-on-scroll interactive-spotlight-card"
+          onMouseMove={handleCardMouseMove}
           style={{
             position: 'relative',
-            padding: '48px 32px',
-            borderRadius: '16px',
+            padding: '52px 32px',
             background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1) 0%, rgba(16, 185, 129, 0.08) 50%, rgba(192, 132, 252, 0.1) 100%)',
-            border: '1px solid rgba(56, 189, 248, 0.3)',
-            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(56, 189, 248, 0.05)',
+            border: '1px solid rgba(56, 189, 248, 0.35)',
+            boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5), inset 0 0 30px rgba(56, 189, 248, 0.06)',
             textAlign: 'center',
             display: 'flex',
             flexDirection: 'column',
