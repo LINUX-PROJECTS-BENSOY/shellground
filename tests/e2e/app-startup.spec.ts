@@ -16,10 +16,17 @@ test.describe('Sub-Phase 12.1: Application Startup & Capability Gate', () => {
     await expect(page.getByText('Network: Disabled')).toBeVisible();
     await expect(page.getByText('Sandbox: WASIX')).toBeVisible();
 
+    // Verify Top-Level Tabs
+    await expect(page.getByTestId('tab-main')).toBeVisible();
+    await expect(page.getByTestId('tab-app')).toBeVisible();
+
     // Verify Main Showcase Tab headline
     await expect(
       page.getByRole('heading', { name: /Master the Linux Terminal/i })
     ).toBeVisible();
+
+    // Switch to Web App tab (which opens the sidebar and workspace)
+    await page.getByTestId('tab-app').click();
 
     // Navigate to Dashboard
     await page.getByTestId('nav-dashboard').click();
@@ -36,6 +43,9 @@ test.describe('Sub-Phase 12.1: Application Startup & Capability Gate', () => {
 
   test('navigates seamlessly across primary views via sidebar', async ({ page }) => {
     await page.goto('/');
+
+    // Switch to ShellGround Web App tab to access the workspace sidebar
+    await page.getByTestId('tab-app').click();
 
     // Navigate to Lab Catalog
     await page.getByTestId('nav-catalog').click();

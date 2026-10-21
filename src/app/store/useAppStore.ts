@@ -28,6 +28,7 @@ export type AppView =
 
 export interface AppStoreState {
   currentView: AppView;
+  lastAppView: AppView;
   activePackId: string;
   activeLabId: string | null;
   isSidebarCollapsed: boolean;
@@ -50,6 +51,8 @@ export interface AppStoreState {
   // Actions
   init: () => Promise<void>;
   setCurrentView: (view: AppView) => void;
+  switchToMainTab: () => void;
+  switchToAppTab: () => void;
   selectLab: (labId: string, packId?: string) => void;
   toggleSidebar: () => void;
   refreshProgress: () => Promise<void>;
@@ -60,6 +63,7 @@ export interface AppStoreState {
 
 export const useAppStore = create<AppStoreState>((set, get) => ({
   currentView: 'welcome',
+  lastAppView: 'dashboard',
   activePackId: 'linux-foundations',
   activeLabId: '001-where-am-i',
   isSidebarCollapsed: false,
@@ -112,13 +116,29 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
     });
   },
 
-  setCurrentView: (view: AppView) => set({ currentView: view }),
+  setCurrentView: (view: AppView) => {
+    if (view !== 'welcome') {
+      set({ currentView: view, lastAppView: view });
+    } else {
+      set({ currentView: view });
+    }
+  },
+
+  switchToMainTab: () => {
+    set({ currentView: 'welcome' });
+  },
+
+  switchToAppTab: () => {
+    const { lastAppView } = get();
+    set({ currentView: lastAppView && lastAppView !== 'welcome' ? lastAppView : 'dashboard' });
+  },
 
   selectLab: (labId: string, packId = 'linux-foundations') => {
     set({
       activeLabId: labId,
       activePackId: packId,
       currentView: 'training',
+      lastAppView: 'training',
     });
   },
 

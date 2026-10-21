@@ -31,6 +31,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const {
     currentView,
     setCurrentView,
+    switchToMainTab,
+    switchToAppTab,
     isSidebarCollapsed,
     toggleSidebar,
     getActiveLab,
@@ -41,12 +43,12 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const isMobile = useIsMobile();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const isMainTab = currentView === 'welcome';
   const activeLab = getActiveLab();
   const totalLabs = registry.listLabs('linux-foundations').length || 20;
   const completedCount = completedLabIds.size;
 
   const navItems: NavItem[] = [
-    { id: 'welcome', label: 'Showcase', icon: <Sparkles size={18} /> },
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
     { id: 'catalog', label: 'Lab Catalog', icon: <BookOpen size={18} /> },
     { id: 'training', label: 'Training Range', icon: <Terminal size={18} /> },
@@ -65,15 +67,16 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           alignItems: 'center',
           justifyContent: 'space-between',
           padding: isMobile ? '0 10px' : '0 16px',
-          height: '48px',
+          height: '52px',
           backgroundColor: 'var(--color-bg-subtle)',
           borderBottom: '1px solid var(--color-border-default)',
           userSelect: 'none',
           zIndex: 10,
+          gap: isMobile ? '8px' : '16px',
         }}
       >
-        {/* Brand & Breadcrumbs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px' }}>
+        {/* Left: Brand & Breadcrumb */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '14px', flexShrink: 0 }}>
           {isMobile && (
             <button
               onClick={() => setMobileMenuOpen(true)}
@@ -94,7 +97,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           )}
 
           <button
-            onClick={() => setCurrentView('welcome')}
+            onClick={switchToMainTab}
+            title="Return to Main Showcase Tab"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -113,7 +117,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <span>{APP_CONFIG.appName}</span>
           </button>
 
-          {!isMobile && (
+          {!isMobile && !isMainTab && (
             <>
               <span style={{ color: 'var(--color-border-default)' }}>|</span>
               {currentView === 'training' && activeLab ? (
@@ -124,15 +128,107 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 </div>
               ) : (
                 <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', textTransform: 'capitalize' }}>
-                  {currentView === 'welcome' ? 'Showcase & Overview' : currentView}
+                  {currentView}
                 </span>
               )}
             </>
           )}
         </div>
 
-        {/* Global Status Badges */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '12px' }}>
+        {/* Center: Top-Level Tab Bar (Separates Main Showcase from Web App) */}
+        <nav
+          role="tablist"
+          aria-label="Top-Level Application Tabs"
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            backgroundColor: 'rgba(10, 14, 23, 0.9)',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            padding: '3px',
+            borderRadius: '10px',
+            gap: '4px',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.35)',
+          }}
+        >
+          {/* Tab 1: Main / Showcase Tab */}
+          <button
+            role="tab"
+            aria-selected={isMainTab}
+            data-testid="tab-main"
+            onClick={switchToMainTab}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: isMobile ? '5px' : '8px',
+              padding: isMobile ? '5px 10px' : '6px 16px',
+              borderRadius: '7px',
+              border: isMainTab ? '1px solid rgba(0, 240, 255, 0.45)' : '1px solid transparent',
+              backgroundColor: isMainTab ? 'rgba(0, 240, 255, 0.14)' : 'transparent',
+              color: isMainTab ? '#00f0ff' : 'var(--color-text-secondary)',
+              fontWeight: isMainTab ? 600 : 500,
+              fontSize: isMobile ? '12px' : '13px',
+              cursor: 'pointer',
+              transition: 'all 0.18s ease',
+              boxShadow: isMainTab ? '0 0 14px rgba(0, 240, 255, 0.22)' : 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Sparkles size={isMobile ? 13 : 15} />
+            <span>{isMobile ? 'Main' : 'Main / Showcase'}</span>
+            {isMainTab && (
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: '#00f0ff',
+                  boxShadow: '0 0 6px #00f0ff',
+                }}
+              />
+            )}
+          </button>
+
+          {/* Tab 2: ShellGround Web App Tab */}
+          <button
+            role="tab"
+            aria-selected={!isMainTab}
+            data-testid="tab-app"
+            onClick={switchToAppTab}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: isMobile ? '5px' : '8px',
+              padding: isMobile ? '5px 10px' : '6px 16px',
+              borderRadius: '7px',
+              border: !isMainTab ? '1px solid rgba(59, 130, 246, 0.5)' : '1px solid transparent',
+              backgroundColor: !isMainTab ? 'rgba(59, 130, 246, 0.16)' : 'transparent',
+              color: !isMainTab ? '#60a5fa' : 'var(--color-text-secondary)',
+              fontWeight: !isMainTab ? 600 : 500,
+              fontSize: isMobile ? '12px' : '13px',
+              cursor: 'pointer',
+              transition: 'all 0.18s ease',
+              boxShadow: !isMainTab ? '0 0 14px rgba(59, 130, 246, 0.22)' : 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            <Terminal size={isMobile ? 13 : 15} />
+            <span>{isMobile ? 'Web App' : 'ShellGround Web App'}</span>
+            {!isMainTab && (
+              <span
+                style={{
+                  width: '6px',
+                  height: '6px',
+                  borderRadius: '50%',
+                  backgroundColor: '#3b82f6',
+                  boxShadow: '0 0 6px #3b82f6',
+                }}
+              />
+            )}
+          </button>
+        </nav>
+
+        {/* Right: Badges & Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '12px', flexShrink: 0 }}>
           {!isMobile && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
               <span>Progress:</span>
@@ -175,8 +271,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
       {/* Workspace Body: Sidebar + Main Content */}
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative' }}>
-        {/* Desktop Navigation Sidebar (hidden on mobile) */}
-        {!isMobile && (
+        {/* Desktop Navigation Sidebar (shown only when in Web App mode) */}
+        {!isMobile && !isMainTab && (
           <aside
             style={{
               width: isSidebarCollapsed ? '56px' : '220px',
@@ -342,6 +438,41 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
               {/* Drawer Nav Items */}
               <nav style={{ display: 'flex', flexDirection: 'column', gap: '6px', padding: '16px 12px', flex: 1, overflowY: 'auto' }}>
+                {/* Main Showcase Tab Item */}
+                <button
+                  data-testid="mobile-nav-main"
+                  onClick={() => {
+                    switchToMainTab();
+                    setMobileMenuOpen(false);
+                  }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '10px 14px',
+                    borderRadius: 'var(--radius-md)',
+                    border: '1px solid',
+                    borderColor: isMainTab ? 'rgba(0, 240, 255, 0.45)' : 'transparent',
+                    backgroundColor: isMainTab ? 'rgba(0, 240, 255, 0.12)' : 'transparent',
+                    color: isMainTab ? '#00f0ff' : 'var(--color-text-secondary)',
+                    fontWeight: isMainTab ? 600 : 500,
+                    fontSize: '14px',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    boxShadow: isMainTab ? '0 0 10px rgba(0, 240, 255, 0.15)' : 'none',
+                    marginBottom: '4px',
+                  }}
+                >
+                  <Sparkles size={18} color={isMainTab ? '#00f0ff' : undefined} />
+                  <span>Main / Showcase Tab</span>
+                </button>
+
+                <div style={{ height: '1px', backgroundColor: 'var(--color-border-muted)', margin: '4px 0 8px' }} />
+
+                <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px', color: 'var(--color-text-muted)', padding: '0 8px 4px', fontWeight: 600 }}>
+                  Web App Workspaces
+                </div>
+
                 {navItems.map((item) => {
                   const isActive = currentView === item.id;
                   return (

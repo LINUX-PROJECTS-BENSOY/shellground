@@ -58,6 +58,35 @@ test.describe('Showcase Landing Page ("Main Tab")', () => {
     ).toBeVisible();
   });
 
+  test('toggles seamlessly between Top-Level Tab Bar (Main / Showcase vs ShellGround Web App)', async ({ page }) => {
+    await page.goto('/');
+
+    const tabMain = page.getByTestId('tab-main');
+    const tabApp = page.getByTestId('tab-app');
+
+    // 1. Initial state: Main Tab is active, sidebar is hidden
+    await expect(tabMain).toBeVisible();
+    await expect(tabApp).toBeVisible();
+    await expect(tabMain).toHaveAttribute('aria-selected', 'true');
+    await expect(tabApp).toHaveAttribute('aria-selected', 'false');
+    await expect(page.getByTestId('nav-dashboard')).not.toBeVisible();
+
+    // 2. Click ShellGround Web App tab: switches to Web App and reveals sidebar
+    await tabApp.click();
+    await expect(tabApp).toHaveAttribute('aria-selected', 'true');
+    await expect(tabMain).toHaveAttribute('aria-selected', 'false');
+    await expect(page.getByTestId('nav-dashboard')).toBeVisible();
+
+    // 3. Click Main / Showcase tab: returns to full-width showcase and hides sidebar
+    await tabMain.click();
+    await expect(tabMain).toHaveAttribute('aria-selected', 'true');
+    await expect(tabApp).toHaveAttribute('aria-selected', 'false');
+    await expect(page.getByTestId('nav-dashboard')).not.toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Master the Linux Terminal/i })
+    ).toBeVisible();
+  });
+
   test('starts training directly from hero CTA', async ({ page }) => {
     await page.goto('/');
 
