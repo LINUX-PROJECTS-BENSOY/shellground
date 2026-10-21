@@ -21,12 +21,18 @@ import {
   Volume2,
   VolumeX,
   Binary,
+  Orbit,
 } from 'lucide-react';
 import { useAppStore } from '../../app/store/useAppStore';
 import { HeroTerminalSimulator } from './components/HeroTerminalSimulator';
 import { InteractiveFeatureTour } from './components/InteractiveFeatureTour';
 import { CyberParticleCanvas } from './components/CyberParticleCanvas';
 import { MatrixRainCanvas } from './components/MatrixRainCanvas';
+import { CyberWarpTunnelCanvas } from './components/CyberWarpTunnelCanvas';
+import { HoloSphere3D } from './components/HoloSphere3D';
+import { ArchitectureStack3D } from './components/ArchitectureStack3D';
+import { HoloCommandCube } from './components/HoloCommandCube';
+import { CyberReticle } from './components/CyberReticle';
 import { SystemLiveGauges } from './components/SystemLiveGauges';
 import { MarqueeTicker } from './components/MarqueeTicker';
 import { MagneticButton } from './components/MagneticButton';
@@ -85,9 +91,9 @@ export const ShowcaseLandingView: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [statsVisible, setStatsVisible] = useState(false);
 
-  // Audio, Matrix rain, and theme toggles
+  // Audio, Background 3D engine, and theme toggles
   const [soundActive, setSoundActive] = useState(false);
-  const [matrixActive, setMatrixActive] = useState(true);
+  const [bgEngine, setBgEngine] = useState<'warp' | 'matrix' | 'mesh'>('warp');
   const [cyberTheme, setCyberTheme] = useState<'cyan' | 'matrix' | 'synthwave' | 'amber'>('cyan');
 
   const totalLabs = registry.listLabs('linux-foundations').length || 20;
@@ -124,9 +130,9 @@ export const ShowcaseLandingView: React.FC = () => {
     setSoundActive(newState);
   };
 
-  const toggleMatrix = () => {
-    soundFx.playHover();
-    setMatrixActive((prev) => !prev);
+  const cycleBgEngine = () => {
+    soundFx.playWarp();
+    setBgEngine((prev) => (prev === 'warp' ? 'matrix' : prev === 'matrix' ? 'mesh' : 'warp'));
   };
 
   const selectTheme = (theme: 'cyan' | 'matrix' | 'synthwave' | 'amber') => {
@@ -218,11 +224,13 @@ export const ShowcaseLandingView: React.FC = () => {
         aria-hidden="true"
       />
 
-      {/* Interactive Matrix Digital Rain Canvas */}
-      {matrixActive && <MatrixRainCanvas opacity={0.25} color={getThemeColor()} />}
+      {/* Interactive 3D Cyber Reticle & Click Shockwave */}
+      <CyberReticle color={getThemeColor()} />
 
-      {/* Interactive Particle Network Canvas */}
-      <CyberParticleCanvas />
+      {/* Selectable Background 3D Engine: Warp Tunnel / Matrix Rain / Particle Mesh */}
+      {bgEngine === 'warp' && <CyberWarpTunnelCanvas color={getThemeColor()} />}
+      {bgEngine === 'matrix' && <MatrixRainCanvas opacity={0.25} color={getThemeColor()} />}
+      {bgEngine === 'mesh' && <CyberParticleCanvas />}
 
       {/* Background Matrix Cyber Grid */}
       <div className="cyber-grid-canvas" />
@@ -302,12 +310,20 @@ export const ShowcaseLandingView: React.FC = () => {
             </button>
 
             <button
-              onClick={toggleMatrix}
-              className={`cyber-control-pill ${matrixActive ? 'is-active' : ''}`}
-              title="Toggle matrix digital rain visual effect"
+              onClick={cycleBgEngine}
+              className="cyber-control-pill is-active"
+              title="Cycle background 3D engine (Warp Tunnel / Matrix Rain / Cyber Mesh)"
             >
-              <Binary size={13} color={matrixActive ? getThemeColor() : undefined} />
-              <span>{matrixActive ? 'Matrix Rain: ON' : 'Matrix Rain: OFF'}</span>
+              {bgEngine === 'warp' ? (
+                <Orbit size={13} color={getThemeColor()} />
+              ) : bgEngine === 'matrix' ? (
+                <Binary size={13} color={getThemeColor()} />
+              ) : (
+                <Sparkles size={13} color={getThemeColor()} />
+              )}
+              <span>
+                Engine: {bgEngine === 'warp' ? '3D Warp' : bgEngine === 'matrix' ? 'Matrix Rain' : 'Cyber Mesh'}
+              </span>
             </button>
 
             <div
@@ -638,6 +654,11 @@ export const ShowcaseLandingView: React.FC = () => {
           </div>
         </div>
 
+        {/* ================= 3D HOLOGRAPHIC COMMAND CUBE ================= */}
+        <div className="reveal-on-scroll">
+          <HoloCommandCube themeColor={getThemeColor()} />
+        </div>
+
         {/* ================= 3D TILT CORE FEATURES GRID ================= */}
         <div>
           <div style={{ textAlign: 'center', marginBottom: '36px' }}>
@@ -679,6 +700,7 @@ export const ShowcaseLandingView: React.FC = () => {
             {/* Feature 1: Spatial Filesystem Tree */}
             <TiltCard maxTilt={8} glowColor="rgba(56, 189, 248, 0.2)" className="reveal-on-scroll reveal-delay-100" style={{ padding: '26px' }}>
               <div
+                className="tilt-depth-1"
                 style={{
                   width: '44px',
                   height: '44px',
@@ -692,10 +714,10 @@ export const ShowcaseLandingView: React.FC = () => {
               >
                 <FolderTree size={22} color="#38bdf8" />
               </div>
-              <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
+              <h3 className="tilt-depth-2" style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
                 Live Spatial Filesystem Tree
               </h3>
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+              <p className="tilt-depth-1" style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
                 Never wonder where your file went. Watch directories expand and files glow with green
                 <strong style={{ color: 'var(--color-success)' }}> +NEW </strong> and amber
                 <strong style={{ color: 'var(--color-warning)' }}> ~MOD </strong> badges the millisecond you run <code>touch</code>, <code>mkdir</code>, or <code>rm</code>.
@@ -705,6 +727,7 @@ export const ShowcaseLandingView: React.FC = () => {
             {/* Feature 2: Native WASIX POSIX Runtime */}
             <TiltCard maxTilt={8} glowColor="rgba(16, 185, 129, 0.2)" className="reveal-on-scroll reveal-delay-200" style={{ padding: '26px' }}>
               <div
+                className="tilt-depth-1"
                 style={{
                   width: '44px',
                   height: '44px',
@@ -718,10 +741,10 @@ export const ShowcaseLandingView: React.FC = () => {
               >
                 <Cpu size={22} color="#10b981" />
               </div>
-              <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
+              <h3 className="tilt-depth-2" style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
                 Native WASIX Virtual Kernel
               </h3>
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+              <p className="tilt-depth-1" style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
                 True POSIX system calls compiled to WebAssembly. Full support for pipelines (<code>|</code>),
                 standard error redirection (<code>2&gt;</code>), exit codes, virtual memory, and process sandboxing.
               </p>
@@ -730,6 +753,7 @@ export const ShowcaseLandingView: React.FC = () => {
             {/* Feature 3: Automated Outcome Validation */}
             <TiltCard maxTilt={8} glowColor="rgba(192, 132, 252, 0.2)" className="reveal-on-scroll reveal-delay-300" style={{ padding: '26px' }}>
               <div
+                className="tilt-depth-1"
                 style={{
                   width: '44px',
                   height: '44px',
@@ -743,10 +767,10 @@ export const ShowcaseLandingView: React.FC = () => {
               >
                 <CheckCircle2 size={22} color="#c084fc" />
               </div>
-              <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
+              <h3 className="tilt-depth-2" style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
                 Instant Automated Validation
               </h3>
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+              <p className="tilt-depth-1" style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
                 Press <code>Ctrl+Enter</code> or click Validate to trigger rigorous multi-rule checking.
                 Verifies file existence, SHA256 hashes, regex contents, directory structures, and process exit codes.
               </p>
@@ -755,6 +779,7 @@ export const ShowcaseLandingView: React.FC = () => {
             {/* Feature 4: Spaced-Repetition Concept Mastery */}
             <TiltCard maxTilt={8} glowColor="rgba(245, 158, 11, 0.2)" className="reveal-on-scroll reveal-delay-100" style={{ padding: '26px' }}>
               <div
+                className="tilt-depth-1"
                 style={{
                   width: '44px',
                   height: '44px',
@@ -768,10 +793,10 @@ export const ShowcaseLandingView: React.FC = () => {
               >
                 <Award size={22} color="#f59e0b" />
               </div>
-              <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
+              <h3 className="tilt-depth-2" style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
                 Spaced-Repetition Skill Analytics
               </h3>
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+              <p className="tilt-depth-1" style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
                 Tracks retention using an algorithmic half-life decay model across 8 core Linux competencies.
                 Interactive radar charts identify knowledge gaps and recommend practice drills.
               </p>
@@ -780,6 +805,7 @@ export const ShowcaseLandingView: React.FC = () => {
             {/* Feature 5: Mobile Command Cockpit */}
             <TiltCard maxTilt={8} glowColor="rgba(56, 189, 248, 0.2)" className="reveal-on-scroll reveal-delay-200" style={{ padding: '26px' }}>
               <div
+                className="tilt-depth-1"
                 style={{
                   width: '44px',
                   height: '44px',
@@ -793,10 +819,10 @@ export const ShowcaseLandingView: React.FC = () => {
               >
                 <Smartphone size={22} color="#38bdf8" />
               </div>
-              <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
+              <h3 className="tilt-depth-2" style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
                 Mobile Touch Command Bar
               </h3>
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+              <p className="tilt-depth-1" style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
                 Practice on the subway or couch. Dedicated on-screen accessory touchbar provides hardware
                 keys missing from mobile keyboards (<code>Tab</code>, <code>Ctrl+C</code>, <code>|</code>, <code>/</code>, <code>~</code>, <code>&gt;</code>).
               </p>
@@ -805,6 +831,7 @@ export const ShowcaseLandingView: React.FC = () => {
             {/* Feature 6: Air-Gapped Local-First Privacy */}
             <TiltCard maxTilt={8} glowColor="rgba(239, 68, 68, 0.2)" className="reveal-on-scroll reveal-delay-300" style={{ padding: '26px' }}>
               <div
+                className="tilt-depth-1"
                 style={{
                   width: '44px',
                   height: '44px',
@@ -818,15 +845,20 @@ export const ShowcaseLandingView: React.FC = () => {
               >
                 <Lock size={22} color="#ef4444" />
               </div>
-              <h3 style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
+              <h3 className="tilt-depth-2" style={{ fontSize: '17px', fontWeight: 600, color: 'var(--color-text-heading)', margin: '0 0 8px' }}>
                 100% Air-Gapped Local-First
               </h3>
-              <p style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
+              <p className="tilt-depth-1" style={{ fontSize: '14px', color: 'var(--color-text-secondary)', lineHeight: 1.6, margin: 0 }}>
                 Zero telemetry leaves your machine. All progress, lab attempts, and command history
                 are securely stored in browser IndexedDB (Dexie). Works offline without internet connectivity.
               </p>
             </TiltCard>
           </div>
+        </div>
+
+        {/* ================= 3D EXPLODED-STACK ARCHITECTURE DECK ================= */}
+        <div className="reveal-on-scroll">
+          <ArchitectureStack3D themeColor={getThemeColor()} />
         </div>
 
         {/* ================= CHAOS TESTING RANGE (INTERACTIVE) ================= */}
@@ -865,6 +897,11 @@ export const ShowcaseLandingView: React.FC = () => {
           </div>
 
           <ChaosSimulator />
+        </div>
+
+        {/* ================= 3D HOLOGRAPHIC KERNEL SPHERE ================= */}
+        <div className="reveal-on-scroll">
+          <HoloSphere3D themeColor={getThemeColor()} />
         </div>
 
         {/* ================= RADAR SKILL MATRIX & 3-STEP JOURNEY ================= */}

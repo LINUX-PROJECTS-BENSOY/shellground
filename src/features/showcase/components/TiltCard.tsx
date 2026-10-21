@@ -70,7 +70,7 @@ export const TiltCard: React.FC<TiltCardProps> = ({
           zIndex: 1,
         }}
       />
-      <div style={{ position: 'relative', zIndex: 2 }}>{children}</div>
+      <div style={{ position: 'relative', zIndex: 2, transformStyle: 'preserve-3d' }}>{children}</div>
     </div>
   );
 };

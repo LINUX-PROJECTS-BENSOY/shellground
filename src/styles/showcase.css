@@ -577,3 +577,59 @@
 .theme-amber {
   --color-accent: #f59e0b;
 }
+
+/* 3D Shockwave & Kinetic Interactions */
+@keyframes expandShockwave {
+  0% {
+    width: 0px;
+    height: 0px;
+    opacity: 0.95;
+    transform: translate(-50%, -50%) scale(0.2);
+    box-shadow: 0 0 10px currentColor;
+  }
+  60% {
+    opacity: 0.6;
+    box-shadow: 0 0 25px currentColor;
+  }
+  100% {
+    width: 380px;
+    height: 380px;
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(1);
+    box-shadow: none;
+  }
+}
+
+.cyber-shockwave-ring {
+  border-radius: 50%;
+  border: 2px solid;
+  animation: expandShockwave 0.7s cubic-bezier(0.1, 0.9, 0.2, 1) forwards;
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 3D Multi-Layer Parallax Depths */
+.tilt-depth-1 {
+  transform: translateZ(15px);
+  transform-style: preserve-3d;
+}
+
+.tilt-depth-2 {
+  transform: translateZ(30px);
+  transform-style: preserve-3d;
+}
+
+.tilt-depth-3 {
+  transform: translateZ(45px);
+  transform-style: preserve-3d;
+}
+

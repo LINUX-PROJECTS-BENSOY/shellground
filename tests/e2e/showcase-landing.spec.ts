@@ -16,10 +16,10 @@ test.describe('Showcase Landing Page ("Main Tab")', () => {
 
     // Verify interactive terminal simulator box
     await expect(page.getByText('guest@shellground: ~/workspace (wasix-v1.4)')).toBeVisible();
-    await expect(page.getByText('tree -L 2 /workspace')).toBeVisible();
+    await expect(page.getByText('tree -L 2 /workspace').first()).toBeVisible();
 
     // Click interactive "ls -la" chip
-    const lsChip = page.getByRole('button', { name: /ls -la/i });
+    const lsChip = page.getByRole('button', { name: /ls -la/i }).first();
     await expect(lsChip).toBeVisible();
     await lsChip.click();
 
@@ -28,7 +28,7 @@ test.describe('Showcase Landing Page ("Main Tab")', () => {
     await expect(page.getByText('.bashrc')).toBeVisible();
 
     // Click interactive "os-release" chip
-    const osChip = page.getByRole('button', { name: /os-release/i });
+    const osChip = page.getByRole('button', { name: 'os-release', exact: true });
     await expect(osChip).toBeVisible();
     await osChip.click();
 
@@ -98,5 +98,36 @@ test.describe('Showcase Landing Page ("Main Tab")', () => {
     // Verify Training Workspace is active (Lab 001)
     await expect(page.getByRole('heading', { name: /Where Am I\?/i })).toBeVisible();
     await expect(page.locator('.terminal-host')).toBeVisible();
+  });
+
+  test('interacts with 3D Command Cube, 3D Architecture Stack, and 3D Kernel Sphere', async ({ page }) => {
+    await page.goto('/');
+
+    // 1. Verify 3D Command Cube presence and face selection
+    await expect(
+      page.getByRole('heading', { name: /Interactive 3D Holographic Command Cube/i })
+    ).toBeVisible();
+    const processFaceBtn = page.getByRole('button', { name: /Process Forensics/i });
+    await expect(processFaceBtn).toBeVisible();
+    await processFaceBtn.click();
+    await expect(page.getByText('PID 1 & SIGNALS')).toBeVisible();
+
+    // 2. Verify 3D Architecture Stack Deck and Explode Stack toggle
+    await expect(
+      page.getByRole('heading', { name: /Interactive 3D Exploded-Stack Architecture Deck/i })
+    ).toBeVisible();
+    const explodeBtn = page.getByRole('button', { name: /Explode Stack/i });
+    await expect(explodeBtn).toBeVisible();
+    await explodeBtn.click();
+    await expect(page.getByRole('button', { name: /Collapse Stack/i })).toBeVisible();
+
+    // 3. Verify 3D Holographic Kernel Core
+    await expect(
+      page.getByRole('heading', { name: /Interactive 3D Holographic Kernel Core/i })
+    ).toBeVisible();
+    const wasixPill = page.getByRole('button', { name: /WASIX Core Kernel/i });
+    await expect(wasixPill).toBeVisible();
+    await wasixPill.click();
+    await expect(page.getByText('Deterministic sandboxed WebAssembly execution environment.')).toBeVisible();
   });
 });
