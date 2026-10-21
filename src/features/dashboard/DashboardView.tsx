@@ -3,6 +3,7 @@ import { Play, BookOpen, Award, AlertCircle, ArrowRight, CheckCircle2, RotateCcw
 import { useAppStore } from '../../app/store/useAppStore';
 import { Button } from '../../shared/components/Button';
 import { Badge } from '../../shared/components/Badge';
+import { TiltCard } from '../showcase/components/TiltCard';
 import type { LabRecommendation } from '../../application/recommendations/RecommendationService';
 import type { MasteryOverview } from '../../application/mastery/MasteryService';
 
@@ -129,7 +130,7 @@ export const DashboardView: React.FC = () => {
           marginBottom: '24px',
         }}
       >
-        <div style={{ backgroundColor: 'var(--color-bg-panel)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: '16px' }}>
+        <TiltCard maxTilt={6} glowColor="rgba(56, 189, 248, 0.18)" style={{ padding: '16px' }}>
           <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Curriculum Completion</span>
           <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-heading)', margin: '4px 0' }}>
             {percentComplete}%
@@ -137,9 +138,9 @@ export const DashboardView: React.FC = () => {
           <span style={{ fontSize: '12px', color: 'var(--color-success)' }}>
             {completedCount} of {totalLabs} labs verified
           </span>
-        </div>
+          </TiltCard>
 
-        <div style={{ backgroundColor: 'var(--color-bg-panel)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: '16px' }}>
+        <TiltCard maxTilt={6} glowColor="rgba(56, 189, 248, 0.18)" style={{ padding: '16px' }}>
           <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Average Mastery Score</span>
           <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-heading)', margin: '4px 0' }}>
             {masteryOverview ? `${Math.round(masteryOverview.averageScore * 100)}%` : '0%'}
@@ -147,9 +148,9 @@ export const DashboardView: React.FC = () => {
           <span style={{ fontSize: '12px', color: 'var(--color-accent)' }}>
             {masteryOverview ? `${masteryOverview.byState.mastered + masteryOverview.byState.competent} concepts fluent` : '19 total concepts'}
           </span>
-        </div>
+          </TiltCard>
 
-        <div style={{ backgroundColor: 'var(--color-bg-panel)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: '16px' }}>
+        <TiltCard maxTilt={6} glowColor="rgba(56, 189, 248, 0.18)" style={{ padding: '16px' }}>
           <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Commands Executed</span>
           <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-heading)', margin: '4px 0' }}>
             {totalCommands}
@@ -157,9 +158,9 @@ export const DashboardView: React.FC = () => {
           <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>
             Recorded in local telemetry
           </span>
-        </div>
+          </TiltCard>
 
-        <div style={{ backgroundColor: 'var(--color-bg-panel)', border: '1px solid var(--color-border-default)', borderRadius: 'var(--radius-md)', padding: '16px' }}>
+        <TiltCard maxTilt={6} glowColor="rgba(56, 189, 248, 0.18)" style={{ padding: '16px' }}>
           <span style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>Active Sandbox</span>
           <div style={{ fontSize: '24px', fontWeight: 700, color: 'var(--color-text-heading)', margin: '4px 0' }}>
             WASIX
@@ -167,7 +168,7 @@ export const DashboardView: React.FC = () => {
           <span style={{ fontSize: '12px', color: 'var(--color-success)' }}>
             Deterministic Client-Side
           </span>
-        </div>
+          </TiltCard>
       </div>
 
       {/* Two Column Grid: Recommendations & Weak Areas */}

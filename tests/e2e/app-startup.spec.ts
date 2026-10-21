@@ -69,4 +69,47 @@ test.describe('Sub-Phase 12.1: Application Startup & Capability Gate', () => {
       page.getByRole('heading', { name: /Terminal Readiness & Training Dashboard/i })
     ).toBeVisible();
   });
+
+  test('provides full cyber interactivity: CRT toggle, sound toggle, theme switch, and 3D Command Dock', async ({ page }) => {
+    await page.goto('/');
+
+    // Switch to Web App tab
+    await page.getByTestId('tab-app').click();
+
+    // 1. Verify CRT toggle button
+    const crtBtn = page.getByRole('button', { name: /CRT/i });
+    await expect(crtBtn).toBeVisible();
+    await crtBtn.click();
+    await expect(page.locator('.app-root')).toHaveClass(/crt-active/);
+
+    // 2. Verify Sound FX toggle button
+    const soundBtn = page.getByRole('button', { name: /FX|Sound/i });
+    await expect(soundBtn).toBeVisible();
+    await soundBtn.click();
+    await expect(page.getByRole('button', { name: /Sound: ON|FX/i })).toBeVisible();
+
+    // 3. Verify Theme Switcher
+    const themeBtn = page.getByRole('button', { name: /cyan|matrix|synthwave|amber/i });
+    await expect(themeBtn).toBeVisible();
+    await themeBtn.click();
+
+    // 4. Navigate to Playground & verify 3D Command Dock
+    await page.getByTestId('nav-playground').click();
+    const commandDockBtn = page.getByRole('button', { name: /Open 3D Holographic Command Dock/i });
+    await expect(commandDockBtn).toBeVisible();
+    await commandDockBtn.click();
+
+    // Verify 3D Command Dock dialog
+    await expect(page.getByRole('dialog', { name: /3D Holographic Command Dock/i })).toBeVisible();
+    await expect(page.getByText('One-click injection into active WASIX terminal')).toBeVisible();
+
+    // Filter commands by search input
+    const searchInput = page.getByPlaceholder(/Search commands/i);
+    await searchInput.fill('chmod');
+    await expect(page.getByText('chmod 755 script.sh')).toBeVisible();
+
+    // Close dock
+    await commandDockBtn.click();
+    await expect(page.getByRole('dialog', { name: /3D Holographic Command Dock/i })).not.toBeVisible();
+  });
 });

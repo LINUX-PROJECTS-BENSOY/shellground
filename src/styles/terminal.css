@@ -46,3 +46,35 @@
   background-color: var(--color-accent-subtle);
   color: var(--color-accent);
 }
+
+/* Retro Cyber CRT Scanline Overlay */
+.crt-active .terminal-host {
+  position: relative;
+  box-shadow: inset 0 0 50px rgba(0, 240, 255, 0.08);
+}
+
+.crt-active .terminal-host::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 2;
+  background-size: 100% 3px, 6px 100%;
+  pointer-events: none;
+}
+
+.crt-active .terminal-host::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: rgba(0, 240, 255, 0.15);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  z-index: 3;
+  pointer-events: none;
+  animation: crtSweep 6s linear infinite;
+}

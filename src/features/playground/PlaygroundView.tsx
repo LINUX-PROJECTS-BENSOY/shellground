@@ -8,6 +8,8 @@ import { Badge } from '../../shared/components/Badge';
 import { InteractiveLabSession } from '../training/services/InteractiveLabSession';
 import { useIsMobile } from '../../shared/hooks/useMediaQuery';
 import { FilesystemInspectorPanel } from '../filesystem-inspector';
+import { HoloQuickAssist } from '../training/components/HoloQuickAssist';
+import { soundFx } from '../showcase/utils/soundEffects';
 import type { LabDefinition } from '../../domain/content/schemas';
 
 export const PlaygroundView: React.FC = () => {
@@ -46,6 +48,7 @@ export const PlaygroundView: React.FC = () => {
   }, [registry, telemetryService, repositories?.commandHistory]);
 
   const handleReset = () => {
+    soundFx.playSnap();
     if (!sessionRef.current) return;
     sessionRef.current.hydrateFixture();
     sessionRef.current.emitWelcomeBanner();
@@ -143,6 +146,9 @@ export const PlaygroundView: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Floating 3D Command Assist Dock */}
+      <HoloQuickAssist processPort={sessionRef.current ?? undefined} />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import React from 'react';
 import type { TerminalProcessPort } from '../terminal.types';
 import type { TerminalController } from '../TerminalController';
+import { soundFx } from '../../features/showcase/utils/soundEffects';
 
 export interface TerminalTouchBarProps {
   readonly processPort?: TerminalProcessPort;
@@ -38,6 +39,7 @@ export const TerminalTouchBar: React.FC<TerminalTouchBarProps> = ({
 }) => {
   const handleKeyPress = (value: string, e: React.MouseEvent | React.TouchEvent) => {
     e.preventDefault();
+    soundFx.playTyping();
     if (processPort) {
       processPort.writeInput(value);
     }

@@ -15,6 +15,8 @@ import { ValidationModal } from './components/ValidationModal';
 import { InteractiveLabSession } from './services/InteractiveLabSession';
 import { useIsMobile } from '../../shared/hooks/useMediaQuery';
 import { FilesystemInspectorPanel } from '../filesystem-inspector';
+import { HoloQuickAssist } from './components/HoloQuickAssist';
+import { soundFx } from '../showcase/utils/soundEffects';
 
 export const TrainingWorkspace: React.FC = () => {
   const {
@@ -67,10 +69,12 @@ export const TrainingWorkspace: React.FC = () => {
   }, [lab?.id, registry, telemetryService, repositories?.commandHistory]);
 
   const handleUnlockHint = (hintId: string) => {
+    soundFx.playHover();
     setUnlockedHintIds((prev) => new Set(prev).add(hintId));
   };
 
   const handleResetLab = () => {
+    soundFx.playSnap();
     if (!sessionRef.current || !lab) return;
     sessionRef.current.hydrateFixture();
     setAttempts((prev) => prev + 1);
@@ -84,6 +88,7 @@ export const TrainingWorkspace: React.FC = () => {
   const handleValidate = useCallback(async () => {
     if (!sessionRef.current || !lab || isValidating) return;
 
+    soundFx.playLaser();
     setIsValidating(true);
     try {
       const ctx = sessionRef.current.getValidatorContext();
@@ -476,6 +481,9 @@ export const TrainingWorkspace: React.FC = () => {
         onRetry={() => setValidationModalOpen(false)}
         onReset={handleResetLab}
       />
+
+      {/* Floating 3D Command Assist Dock */}
+      <HoloQuickAssist processPort={sessionRef.current ?? undefined} />
     </div>
   );
 };

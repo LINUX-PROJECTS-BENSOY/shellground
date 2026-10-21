@@ -566,16 +566,28 @@
 }
 
 /* Dynamic Cyber Theme Variants */
+.theme-cyan {
+  --color-accent: #00f0ff;
+  --color-accent-subtle: rgba(0, 240, 255, 0.15);
+  --terminal-cursor: #00f0ff;
+}
+
 .theme-matrix {
   --color-accent: #10b981;
+  --color-accent-subtle: rgba(16, 185, 129, 0.15);
+  --terminal-cursor: #10b981;
 }
 
 .theme-synthwave {
   --color-accent: #c084fc;
+  --color-accent-subtle: rgba(192, 132, 252, 0.15);
+  --terminal-cursor: #c084fc;
 }
 
 .theme-amber {
   --color-accent: #f59e0b;
+  --color-accent-subtle: rgba(245, 158, 11, 0.15);
+  --terminal-cursor: #f59e0b;
 }
 
 /* 3D Shockwave & Kinetic Interactions */

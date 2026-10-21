@@ -16,6 +16,10 @@ import { ProgressService } from '../../application/progress/ProgressService';
 import { BackupService } from '../../infrastructure/persistence/backup/BackupService';
 import type { LabProgressRecord, ConceptMasteryRecord } from '../../domain/persistence/models';
 
+import { soundFx } from '../../features/showcase/utils/soundEffects';
+
+export type CyberTheme = 'cyan' | 'matrix' | 'synthwave' | 'amber';
+
 export type AppView =
   | 'welcome'
   | 'dashboard'
@@ -33,6 +37,11 @@ export interface AppStoreState {
   activeLabId: string | null;
   isSidebarCollapsed: boolean;
   isInitialized: boolean;
+
+  // Global Cyber Experience & Audio State
+  cyberTheme: CyberTheme;
+  soundEnabled: boolean;
+  crtEffectEnabled: boolean;
 
   // Repositories & Services
   repositories: RepositoryBundle | null;
@@ -55,6 +64,9 @@ export interface AppStoreState {
   switchToAppTab: () => void;
   selectLab: (labId: string, packId?: string) => void;
   toggleSidebar: () => void;
+  setCyberTheme: (theme: CyberTheme) => void;
+  toggleSound: () => boolean;
+  toggleCrtEffect: () => void;
   refreshProgress: () => Promise<void>;
   getActiveLab: () => LabDefinition | undefined;
   getActivePack: () => PackDefinition | undefined;
@@ -68,6 +80,10 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
   activeLabId: '001-where-am-i',
   isSidebarCollapsed: false,
   isInitialized: false,
+
+  cyberTheme: 'cyan',
+  soundEnabled: false,
+  crtEffectEnabled: false,
 
   repositories: null,
   registry: getPackRegistry(),
@@ -143,6 +159,22 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
   },
 
   toggleSidebar: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
+
+  setCyberTheme: (theme: CyberTheme) => {
+    soundFx.playHover();
+    set({ cyberTheme: theme });
+  },
+
+  toggleSound: () => {
+    const newState = soundFx.toggleSound();
+    set({ soundEnabled: newState });
+    return newState;
+  },
+
+  toggleCrtEffect: () => {
+    soundFx.playSnap();
+    set((state) => ({ crtEffectEnabled: !state.crtEffectEnabled }));
+  },
 
   refreshProgress: async () => {
     const { repositories, registry } = get();

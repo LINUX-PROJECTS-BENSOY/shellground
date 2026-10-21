@@ -15,11 +15,17 @@ import {
   ExternalLink,
   Menu,
   X,
+  Volume2,
+  VolumeX,
+  Tv,
+  Palette,
 } from 'lucide-react';
-import { useAppStore, type AppView } from '../../app/store/useAppStore';
+import { useAppStore, type AppView, type CyberTheme } from '../../app/store/useAppStore';
 import { APP_CONFIG } from '../../app/config/app-config';
 import { Badge } from './Badge';
 import { useIsMobile } from '../hooks/useMediaQuery';
+import { soundFx } from '../../features/showcase/utils/soundEffects';
+import { CyberReticle } from '../../features/showcase/components/CyberReticle';
 
 interface NavItem {
   id: AppView;
@@ -38,6 +44,12 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     getActiveLab,
     completedLabIds,
     registry,
+    cyberTheme,
+    setCyberTheme,
+    soundEnabled,
+    toggleSound,
+    crtEffectEnabled,
+    toggleCrtEffect,
   } = useAppStore();
 
   const isMobile = useIsMobile();
@@ -47,6 +59,25 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const activeLab = getActiveLab();
   const totalLabs = registry.listLabs('linux-foundations').length || 20;
   const completedCount = completedLabIds.size;
+
+  const getThemeColor = () => {
+    switch (cyberTheme) {
+      case 'matrix':
+        return '#10b981';
+      case 'synthwave':
+        return '#c084fc';
+      case 'amber':
+        return '#f59e0b';
+      default:
+        return '#00f0ff';
+    }
+  };
+
+  const cycleTheme = () => {
+    const themes: CyberTheme[] = ['cyan', 'matrix', 'synthwave', 'amber'];
+    const nextIdx = (themes.indexOf(cyberTheme) + 1) % themes.length;
+    setCyberTheme(themes[nextIdx]!);
+  };
 
   const navItems: NavItem[] = [
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
@@ -59,7 +90,12 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh', width: '100vw', overflow: 'hidden' }}>
+    <div
+      className={`app-root theme-${cyberTheme} ${crtEffectEnabled ? 'crt-active' : ''}`}
+      style={{ display: 'flex', flexDirection: 'column', height: '100dvh', width: '100vw', overflow: 'hidden' }}
+    >
+      {/* Interactive 3D Cyber Reticle & Click Shockwave across the whole app */}
+      <CyberReticle color={getThemeColor()} />
       {/* Top Application Header */}
       <header
         style={{
@@ -155,7 +191,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             role="tab"
             aria-selected={isMainTab}
             data-testid="tab-main"
-            onClick={switchToMainTab}
+            onClick={() => {
+              soundFx.playHover();
+              switchToMainTab();
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -193,7 +232,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             role="tab"
             aria-selected={!isMainTab}
             data-testid="tab-app"
-            onClick={switchToAppTab}
+            onClick={() => {
+              soundFx.playHover();
+              switchToAppTab();
+            }}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -227,8 +269,43 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           </button>
         </nav>
 
-        {/* Right: Badges & Links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '12px', flexShrink: 0 }}>
+        {/* Right: Cyber Controls, Badges & Links */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? '6px' : '10px', flexShrink: 0 }}>
+          {/* Cyber Controls: CRT Scanline, Sound FX, Theme Picker */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <button
+              onClick={toggleCrtEffect}
+              className={`cyber-control-pill ${crtEffectEnabled ? 'is-active' : ''}`}
+              title="Toggle retro phosphor CRT terminal scanline effect"
+              style={{ padding: '4px 8px', fontSize: '11px' }}
+            >
+              <Tv size={12} color={crtEffectEnabled ? getThemeColor() : undefined} />
+              <span>{isMobile ? 'CRT' : crtEffectEnabled ? 'CRT: ON' : 'CRT: OFF'}</span>
+            </button>
+
+            <button
+              onClick={toggleSound}
+              className={`cyber-control-pill ${soundEnabled ? 'is-active' : ''}`}
+              title="Toggle synthesized tactile audio feedback"
+              style={{ padding: '4px 8px', fontSize: '11px' }}
+            >
+              {soundEnabled ? <Volume2 size={12} color={getThemeColor()} /> : <VolumeX size={12} />}
+              <span>{isMobile ? 'FX' : soundEnabled ? 'Sound: ON' : 'Sound: OFF'}</span>
+            </button>
+
+            {!isMobile && (
+              <button
+                onClick={cycleTheme}
+                className="cyber-control-pill"
+                title={`Cycle Cyber theme (current: ${cyberTheme})`}
+                style={{ padding: '4px 8px', fontSize: '11px', textTransform: 'capitalize' }}
+              >
+                <Palette size={12} color={getThemeColor()} />
+                <span>{cyberTheme}</span>
+              </button>
+            )}
+          </div>
+
           {!isMobile && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: 'var(--color-text-secondary)' }}>
               <span>Progress:</span>
@@ -292,7 +369,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   <button
                     key={item.id}
                     data-testid={`nav-${item.id}`}
-                    onClick={() => setCurrentView(item.id)}
+                    onClick={() => {
+                      soundFx.playHover();
+                      setCurrentView(item.id);
+                    }}
                     title={isSidebarCollapsed ? item.label : undefined}
                     style={{
                       display: 'flex',
@@ -442,6 +522,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 <button
                   data-testid="mobile-nav-main"
                   onClick={() => {
+                    soundFx.playHover();
                     switchToMainTab();
                     setMobileMenuOpen(false);
                   }}
@@ -480,6 +561,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                       key={item.id}
                       data-testid={`mobile-nav-${item.id}`}
                       onClick={() => {
+                        soundFx.playHover();
                         setCurrentView(item.id);
                         setMobileMenuOpen(false);
                       }}

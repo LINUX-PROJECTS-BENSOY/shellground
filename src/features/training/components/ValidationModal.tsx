@@ -1,10 +1,11 @@
-import React from 'react';
-import { CheckCircle2, XCircle, Award, ArrowRight, RotateCcw } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { CheckCircle2, XCircle, Award, ArrowRight, RotateCcw, Sparkles } from 'lucide-react';
 import type { ValidationSummary } from '../../../domain/validation/Validator';
 import type { SessionScoreBreakdown } from '../../../domain/mastery/MasteryRecord';
 import { Modal } from '../../../shared/components/Modal';
 import { Button } from '../../../shared/components/Button';
 import { Badge } from '../../../shared/components/Badge';
+import { soundFx } from '../../showcase/utils/soundEffects';
 
 export interface ValidationModalProps {
   isOpen: boolean;
@@ -27,6 +28,16 @@ export const ValidationModal: React.FC<ValidationModalProps> = ({
   onRetry,
   onReset,
 }) => {
+  useEffect(() => {
+    if (isOpen && summary) {
+      if (summary.passed) {
+        soundFx.playSuccess();
+      } else {
+        soundFx.playGlitch();
+      }
+    }
+  }, [isOpen, summary]);
+
   if (!summary) return null;
 
   const isPassed = summary.passed;
@@ -48,13 +59,33 @@ export const ValidationModal: React.FC<ValidationModalProps> = ({
             padding: '16px',
             backgroundColor: isPassed ? 'rgba(63, 185, 80, 0.12)' : 'rgba(248, 81, 73, 0.12)',
             border: '1px solid',
-            borderColor: isPassed ? 'rgba(63, 185, 80, 0.3)' : 'rgba(248, 81, 73, 0.3)',
+            borderColor: isPassed ? 'rgba(63, 185, 80, 0.4)' : 'rgba(248, 81, 73, 0.4)',
             borderRadius: 'var(--radius-md)',
+            boxShadow: isPassed ? '0 0 20px rgba(63, 185, 80, 0.15)' : 'none',
+            position: 'relative',
+            overflow: 'hidden',
           }}
         >
+          {isPassed && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '-10px',
+                right: '-10px',
+                width: '120px',
+                height: '120px',
+                background: 'radial-gradient(circle, rgba(63, 185, 80, 0.25) 0%, transparent 70%)',
+                pointerEvents: 'none',
+              }}
+            />
+          )}
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
             {isPassed ? (
-              <CheckCircle2 size={32} color="var(--color-success)" />
+              <div style={{ display: 'flex', position: 'relative' }}>
+                <CheckCircle2 size={32} color="var(--color-success)" />
+                <Sparkles size={16} color="#ffffff" style={{ position: 'absolute', top: -4, right: -4, animation: 'spinGradient 6s linear infinite' }} />
+              </div>
             ) : (
               <XCircle size={32} color="var(--color-danger)" />
             )}
