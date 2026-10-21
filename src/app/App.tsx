@@ -9,6 +9,7 @@ import { PlaygroundView } from '../features/playground/PlaygroundView';
 import { MasteryView } from '../features/mastery/MasteryView';
 import { DiagnosticsView } from '../features/diagnostics/DiagnosticsView';
 import { SettingsView } from '../features/settings/SettingsView';
+import { ShowcaseLandingView } from '../features/showcase';
 
 export const App: React.FC = () => {
   const { currentView, init, isInitialized } = useAppStore();
@@ -21,6 +22,8 @@ export const App: React.FC = () => {
 
   const renderActiveView = () => {
     switch (currentView) {
+      case 'welcome':
+        return <ShowcaseLandingView />;
       case 'dashboard':
         return <DashboardView />;
       case 'catalog':

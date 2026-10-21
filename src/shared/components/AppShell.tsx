@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Sparkles,
   LayoutDashboard,
   BookOpen,
   Terminal,
@@ -45,6 +46,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const completedCount = completedLabIds.size;
 
   const navItems: NavItem[] = [
+    { id: 'welcome', label: 'Showcase', icon: <Sparkles size={18} /> },
     { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
     { id: 'catalog', label: 'Lab Catalog', icon: <BookOpen size={18} /> },
     { id: 'training', label: 'Training Range', icon: <Terminal size={18} /> },
@@ -92,7 +94,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           )}
 
           <button
-            onClick={() => setCurrentView('dashboard')}
+            onClick={() => setCurrentView('welcome')}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -122,7 +124,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 </div>
               ) : (
                 <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)', textTransform: 'capitalize' }}>
-                  {currentView}
+                  {currentView === 'welcome' ? 'Showcase & Overview' : currentView}
                 </span>
               )}
             </>

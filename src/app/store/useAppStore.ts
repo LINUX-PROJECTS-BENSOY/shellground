@@ -17,6 +17,7 @@ import { BackupService } from '../../infrastructure/persistence/backup/BackupSer
 import type { LabProgressRecord, ConceptMasteryRecord } from '../../domain/persistence/models';
 
 export type AppView =
+  | 'welcome'
   | 'dashboard'
   | 'catalog'
   | 'training'
@@ -58,7 +59,7 @@ export interface AppStoreState {
 }
 
 export const useAppStore = create<AppStoreState>((set, get) => ({
-  currentView: 'dashboard',
+  currentView: 'welcome',
   activePackId: 'linux-foundations',
   activeLabId: '001-where-am-i',
   isSidebarCollapsed: false,

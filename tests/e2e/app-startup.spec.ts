@@ -16,6 +16,14 @@ test.describe('Sub-Phase 12.1: Application Startup & Capability Gate', () => {
     await expect(page.getByText('Network: Disabled')).toBeVisible();
     await expect(page.getByText('Sandbox: WASIX')).toBeVisible();
 
+    // Verify Main Showcase Tab headline
+    await expect(
+      page.getByRole('heading', { name: /Master the Linux Terminal/i })
+    ).toBeVisible();
+
+    // Navigate to Dashboard
+    await page.getByTestId('nav-dashboard').click();
+
     // Verify Dashboard heading
     await expect(
       page.getByRole('heading', { name: /Terminal Readiness & Training Dashboard/i })

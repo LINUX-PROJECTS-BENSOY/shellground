@@ -1,6 +1,7 @@
 @import './tokens.css';
 @import './terminal.css';
 @import './accessibility.css';
+@import './showcase.css';
 
 *, *::before, *::after {
   box-sizing: border-box;
